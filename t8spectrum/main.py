@@ -2,6 +2,8 @@ import os
 from datetime import datetime
 
 from dotenv import load_dotenv
+from matplotlib import pyplot as plt
+import numpy as np
 
 from t8spectrum.get_data import get_waveform
 
@@ -20,7 +22,10 @@ T8_PASSWORD = os.getenv("T8_PASSWORD")
 if __name__ == "__main__":
 
     time = datetime.fromtimestamp(TIME)
-    waveform = get_waveform(
+    waveform, sample_rate = get_waveform(
         HOST, ID, MACHINE, POINT, PMODE, TIME, T8_USER, T8_PASSWORD
     )
-    print(waveform)
+
+    instants = np.arange(0, len(waveform) / sample_rate, 1 / sample_rate)
+    plt.plot(instants, waveform)
+    plt.show()
