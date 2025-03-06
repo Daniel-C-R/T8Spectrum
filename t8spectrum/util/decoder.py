@@ -1,6 +1,6 @@
-from zlib import decompress
 from base64 import b64decode
 from struct import unpack
+from zlib import decompress
 
 import numpy as np
 

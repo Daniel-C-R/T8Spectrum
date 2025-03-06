@@ -1,8 +1,7 @@
 from datetime import datetime
+
 import numpy as np
-
 import requests
-
 
 from t8spectrum.util.decoder import zint_to_float
 

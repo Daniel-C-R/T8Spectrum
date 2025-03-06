@@ -1,9 +1,9 @@
 import os
 from datetime import datetime
 
+import numpy as np
 from dotenv import load_dotenv
 from matplotlib import pyplot as plt
-import numpy as np
 
 from t8spectrum.get_data import get_waveform
 
