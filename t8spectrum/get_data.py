@@ -38,7 +38,7 @@ def get_waveform(
         Exception: If the request to fetch the waveform data fails.
     """
     if type(time) is datetime:
-        time = time.timestamp()
+        time = int(time.timestamp())
 
     url = f"https://{host}/{id}/rest/waves/{machine}/{point}/{pmode}/{time}"
     response = requests.get(url, auth=(t8_user, t8_password))
@@ -82,7 +82,7 @@ def get_spectra(
         Exception: If the request to the server fails.
     """
     if type(time) is datetime:
-        time = time.timestamp()
+        time = int(time.timestamp())
 
     url = f"https://{host}/{id}/rest/spectra/{machine}/{point}/{pmode}/{time}"
     response = requests.get(url, auth=(t8_user, t8_password))
@@ -90,5 +90,6 @@ def get_spectra(
         raise Exception(f"Failed to get spectra: {response.text}")
 
     spectrum = zint_to_float(response.json()["data"])
+    factor = response.json()["factor"]
 
-    return spectrum
+    return spectrum * factor
