@@ -25,12 +25,14 @@ def get_waveform(
         machine (str): The machine identifier.
         point (str): The point tag.
         pmode (str): The processing mode tag.
-        time (datetime | int): The waveform timestamp, either as a datetime object or an integer timestamp.
+        time (datetime | int): The waveform timestamp, either as a datetime object or an
+            integer timestamp.
         t8_user (str): The username for authentication.
         t8_password (str): The password for authentication.
 
     Returns:
-        tuple[np.ndarray, int]: A tuple containing the waveform data as a numpy array and the sample rate as an integer.
+        tuple[np.ndarray, int]: A tuple containing the waveform data as a numpy array
+            and the sample rate as an integer.
 
     Raises:
         Exception: If the request to fetch the waveform data fails.
