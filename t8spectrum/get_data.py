@@ -47,3 +47,46 @@ def get_waveform(
     sample_rate = response.json()["sample_rate"]
 
     return waveform, sample_rate
+
+
+def get_spectra(
+        host: str,
+        id: str,
+        machine: str,
+        point: str,
+        pmode: str,
+        time: datetime | int,
+        t8_user: str,
+        t8_password: str
+) -> tuple[np.ndarray]:
+    """
+    Fetches spectral data from a specified host and endpoint.
+
+    Args:
+        host (str): The hostname of the server.
+        id (str): The identifier for the spectra.
+        machine (str): The machine identifier.
+        point (str): The point identifier.
+        pmode (str): The mode of the spectra.
+        time (datetime | int): The time of the spectra, either as a datetime object or a
+            Unix timestamp.
+        t8_user (str): The username for authentication.
+        t8_password (str): The password for authentication.
+
+    Returns:
+        tuple[np.ndarray]: A tuple containing the spectral data as numpy arrays.
+
+    Raises:
+        Exception: If the request to the server fails.
+    """
+    if type(time) is datetime:
+        time = time.timestamp()
+
+    url = f"https://{host}/{id}/rest/spectra/{machine}/{point}/{pmode}/{time}"
+    response = requests.get(url, auth=(t8_user, t8_password))
+    if response.status_code != 200:
+        raise Exception(f"Failed to get spectra: {response.text}")
+
+    spectrum = zint_to_float(response.json()["data"])
+
+    return spectrum
