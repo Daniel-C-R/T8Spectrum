@@ -18,5 +18,10 @@ def zint_to_float(raw):
             input string.
     """
     decompressed_data = decompress(b64decode(raw.encode()))
-    return np.array([unpack('h', decompressed_data[i*2:(i+1)*2])[0]
-                     for i in range(int(len(decompressed_data)/2))], dtype='f')
+    return np.array(
+        [
+            unpack("h", decompressed_data[i * 2 : (i + 1) * 2])[0]
+            for i in range(int(len(decompressed_data) / 2))
+        ],
+        dtype="f",
+    )

@@ -7,14 +7,14 @@ from t8spectrum.util.decoder import zint_to_float
 
 
 def get_waveform(
-        host: str,
-        id: str,
-        machine: str,
-        point: str,
-        pmode: str,
-        time: datetime | int,
-        t8_user: str,
-        t8_password: str
+    host: str,
+    id: str,
+    machine: str,
+    point: str,
+    pmode: str,
+    time: datetime | int,
+    t8_user: str,
+    t8_password: str,
 ) -> tuple[np.ndarray, int]:
     """
     Fetches waveform data from a specified host.
@@ -52,14 +52,14 @@ def get_waveform(
 
 
 def get_spectra(
-        host: str,
-        id: str,
-        machine: str,
-        point: str,
-        pmode: str,
-        time: datetime | int,
-        t8_user: str,
-        t8_password: str
+    host: str,
+    id: str,
+    machine: str,
+    point: str,
+    pmode: str,
+    time: datetime | int,
+    t8_user: str,
+    t8_password: str,
 ) -> tuple[np.ndarray]:
     """
     Fetches spectral data from a specified host and endpoint.

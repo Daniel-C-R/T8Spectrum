@@ -19,7 +19,6 @@ T8_USER = os.getenv("T8_USER")
 T8_PASSWORD = os.getenv("T8_PASSWORD")
 
 if __name__ == "__main__":
-
     waveform, sample_rate = get_waveform(
         HOST, ID, MACHINE, POINT, PMODE, TIME, T8_USER, T8_PASSWORD
     )
