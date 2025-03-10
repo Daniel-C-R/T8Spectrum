@@ -44,11 +44,13 @@ def get_waveform(
     response = requests.get(url, auth=(t8_user, t8_password))
     if response.status_code != 200:
         raise Exception(f"Failed to get waveform: {response.text}")
+    response = response.json()
 
-    waveform = zint_to_float(response.json()["data"])
-    sample_rate = response.json()["sample_rate"]
+    waveform = zint_to_float(response["data"])
+    factor = response["factor"]
+    sample_rate = response["sample_rate"]
 
-    return waveform, sample_rate
+    return waveform * factor, sample_rate
 
 
 def get_spectra(

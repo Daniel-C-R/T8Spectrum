@@ -26,8 +26,10 @@ if __name__ == "__main__":
         HOST, ID, MACHINE, POINT, PMODE, time_utc, T8_USER, T8_PASSWORD
     )
 
-    instants = np.arange(0, len(waveform) / sample_rate, 1 / sample_rate)
+    instants = np.linspace(0, len(waveform) / sample_rate, len(waveform))
+
     plt.plot(instants, waveform)
+    plt.grid(True)
     plt.show()
 
     t8_spectrum = get_spectra(
