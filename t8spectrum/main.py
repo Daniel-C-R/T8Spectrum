@@ -32,10 +32,12 @@ if __name__ == "__main__":
     plt.grid(True)
     plt.show()
 
-    t8_spectrum = get_spectra(
+    t8_spectrum, fmin, fmax = get_spectra(
         HOST, ID, MACHINE, POINT, PMODE, time_utc, T8_USER, T8_PASSWORD
     )
 
-    print(t8_spectrum)
-    plt.plot(t8_spectrum)
+    t8_freqs = np.linspace(fmin, fmax, len(t8_spectrum))
+
+    plt.plot(t8_freqs, t8_spectrum)
+    plt.grid(True)
     plt.show()

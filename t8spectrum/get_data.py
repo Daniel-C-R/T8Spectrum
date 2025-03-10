@@ -90,8 +90,11 @@ def get_spectra(
     response = requests.get(url, auth=(t8_user, t8_password))
     if response.status_code != 200:
         raise Exception(f"Failed to get spectra: {response.text}")
+    response = response.json()
 
-    spectrum = zint_to_float(response.json()["data"])
-    factor = response.json()["factor"]
+    spectrum = zint_to_float(response["data"])
+    factor = response["factor"]
+    fmin = response.get("min_freq", 0)
+    fmax = response["max_freq"]
 
-    return spectrum * factor
+    return spectrum * factor, fmin, fmax
