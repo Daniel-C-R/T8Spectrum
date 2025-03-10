@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from matplotlib import pyplot as plt
 
 from t8spectrum.get_data import get_spectra, get_waveform
+from t8spectrum.util.plots import plot_waveform
 
 HOST = "lzfs45.mirror.twave.io"
 ID = "lzfs45"
@@ -28,9 +29,7 @@ if __name__ == "__main__":
 
     instants = np.linspace(0, len(waveform) / sample_rate, len(waveform))
 
-    plt.plot(instants, waveform)
-    plt.grid(True)
-    plt.show()
+    plot_waveform(waveform, sample_rate)
 
     t8_spectrum, fmin, fmax = get_spectra(
         HOST, ID, MACHINE, POINT, PMODE, time_utc, T8_USER, T8_PASSWORD
