@@ -38,17 +38,19 @@ def get_waveform(
         Exception: If the request to fetch the waveform data fails.
     """
     if type(time) is datetime:
-        time = time.timestamp()
+        time = int(time.timestamp())
 
     url = f"https://{host}/{id}/rest/waves/{machine}/{point}/{pmode}/{time}"
     response = requests.get(url, auth=(t8_user, t8_password))
     if response.status_code != 200:
         raise Exception(f"Failed to get waveform: {response.text}")
+    response = response.json()
 
-    waveform = zint_to_float(response.json()["data"])
-    sample_rate = response.json()["sample_rate"]
+    waveform = zint_to_float(response["data"])
+    factor = response["factor"]
+    sample_rate = response["sample_rate"]
 
-    return waveform, sample_rate
+    return waveform * factor, sample_rate
 
 
 def get_spectra(
@@ -82,13 +84,17 @@ def get_spectra(
         Exception: If the request to the server fails.
     """
     if type(time) is datetime:
-        time = time.timestamp()
+        time = int(time.timestamp())
 
     url = f"https://{host}/{id}/rest/spectra/{machine}/{point}/{pmode}/{time}"
     response = requests.get(url, auth=(t8_user, t8_password))
     if response.status_code != 200:
         raise Exception(f"Failed to get spectra: {response.text}")
+    response = response.json()
 
-    spectrum = zint_to_float(response.json()["data"])
+    spectrum = zint_to_float(response["data"])
+    factor = response["factor"]
+    fmin = response.get("min_freq", 0)
+    fmax = response["max_freq"]
 
-    return spectrum
+    return spectrum * factor, fmin, fmax
