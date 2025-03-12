@@ -4,6 +4,7 @@ from datetime import UTC, datetime
 import numpy as np
 from dotenv import load_dotenv
 from matplotlib import pyplot as plt
+from scipy.fft import rfft
 
 from t8spectrum.get_data import get_spectra, get_waveform
 from t8spectrum.util.plots import plot_waveform
@@ -37,6 +38,23 @@ if __name__ == "__main__":
 
     t8_freqs = np.linspace(fmin, fmax, len(t8_spectrum))
 
-    plt.plot(t8_freqs, t8_spectrum)
+    plt.plot(t8_spectrum)
+    plt.xlim(fmin, fmax)
+    plt.grid(True)
+    plt.show()
+
+    # Apply a Hanning window
+    windowed_waveform = waveform * np.hanning(len(waveform))
+
+    # Zero padding to the next power of 2
+    n = len(windowed_waveform)
+    padded_length = 2 ** np.ceil(np.log2(n)).astype(int)
+    padded_waveform = np.pad(windowed_waveform, (0, padded_length - n), "constant")
+
+    # Compute the FFT
+    spectrum = rfft(padded_waveform)
+
+    plt.plot(spectrum)
+    plt.xlim(fmin, fmax)
     plt.grid(True)
     plt.show()
