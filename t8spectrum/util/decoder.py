@@ -17,6 +17,9 @@ def zint_to_float(raw):
         np.ndarray: A NumPy array of floats obtained by decompressing and decoding the
             input string.
     """
+    if not raw:
+        return np.array([], dtype="f")
+
     decompressed_data = decompress(b64decode(raw.encode()))
     return np.array(
         [
