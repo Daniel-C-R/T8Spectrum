@@ -28,6 +28,7 @@ if __name__ == "__main__":
         HOST, ID, MACHINE, POINT, PMODE, time_utc, T8_USER, T8_PASSWORD
     )
 
+    # Get waveform from API
     waveform, sample_rate = get_waveform(url_params)
     preprocessed_waveform = preprocess_waveform(waveform)
 
@@ -37,13 +38,16 @@ if __name__ == "__main__":
 
     plot_waveform(waveform, sample_rate)
 
+    # Get T8 spectrum from API
     t8_spectrum, fmin, fmax = get_spectra(url_params)
     t8_freqs = np.linspace(fmin, fmax, len(t8_spectrum))
 
+    # Calculate spectrum from waveform
     filtered_spectrum, filtered_freqs = calculate_spectrum(
         preprocessed_waveform, sample_rate, fmin, fmax
     )
 
+    # Compare T8 spectrum and calculated spectrum
     plot_spectrum_comparison(
         t8_spectrum,
         t8_freqs,
