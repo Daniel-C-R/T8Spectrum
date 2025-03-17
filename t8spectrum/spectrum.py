@@ -18,11 +18,11 @@ def calculate_spectrum(
     Returns:
     tuple[np.ndarray, np.ndarray]: A tuple containing:
         - filtered_spectrum (np.ndarray): The magnitude of the frequency spectrum within
-            the specified range.
+            the specified range, with an RMS AC detector.
         - filtered_freqs (np.ndarray): The corresponding frequencies within the
             specified range.
     """
-    spectrum = fft(waveform)
+    spectrum = fft(waveform) * 2 * np.sqrt(2)
     magintude = np.abs(spectrum) / len(spectrum)
     freqs = fftfreq(len(waveform), 1 / sample_rate)
     filtered_spectrum = magintude[(freqs >= fmin) & (freqs <= fmax)]
