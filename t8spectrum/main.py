@@ -56,5 +56,5 @@ if __name__ == "__main__":
         fmin,
         fmax,
         title1="T8 Spectrum",
-        title2="Filtered Spectrum",
+        title2="Calculated Spectrum",
     )
