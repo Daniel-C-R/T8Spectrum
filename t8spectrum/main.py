@@ -3,12 +3,12 @@ from datetime import UTC, datetime
 
 import numpy as np
 from dotenv import load_dotenv
-from matplotlib import pyplot as plt
-from scipy.fft import rfft
 
 from t8spectrum.get_data import get_spectra, get_waveform
+from t8spectrum.spectrum import calculate_spectrum
 from t8spectrum.url_params import UrlParams
-from t8spectrum.util.plots import plot_waveform
+from t8spectrum.util.plots import plot_spectrum_comparison, plot_waveform
+from t8spectrum.waveform import preprocess_waveform
 
 HOST = "lzfs45.mirror.twave.io"
 ID = "lzfs45"
@@ -28,33 +28,33 @@ if __name__ == "__main__":
         HOST, ID, MACHINE, POINT, PMODE, time_utc, T8_USER, T8_PASSWORD
     )
 
+    # Get waveform from API
     waveform, sample_rate = get_waveform(url_params)
+    preprocessed_waveform = preprocess_waveform(waveform)
 
-    instants = np.linspace(0, len(waveform) / sample_rate, len(waveform))
+    instants = np.linspace(
+        0, len(preprocessed_waveform) / sample_rate, len(preprocessed_waveform)
+    )
 
     plot_waveform(waveform, sample_rate)
 
+    # Get T8 spectrum from API
     t8_spectrum, fmin, fmax = get_spectra(url_params)
-
     t8_freqs = np.linspace(fmin, fmax, len(t8_spectrum))
 
-    plt.plot(t8_spectrum)
-    plt.xlim(fmin, fmax)
-    plt.grid(True)
-    plt.show()
+    # Calculate spectrum from waveform
+    filtered_spectrum, filtered_freqs = calculate_spectrum(
+        preprocessed_waveform, sample_rate, fmin, fmax
+    )
 
-    # Apply a Hanning window
-    windowed_waveform = waveform * np.hanning(len(waveform))
-
-    # Zero padding to the next power of 2
-    n = len(windowed_waveform)
-    padded_length = 2 ** np.ceil(np.log2(n)).astype(int)
-    padded_waveform = np.pad(windowed_waveform, (0, padded_length - n), "constant")
-
-    # Compute the FFT
-    spectrum = rfft(padded_waveform)
-
-    plt.plot(spectrum)
-    plt.xlim(fmin, fmax)
-    plt.grid(True)
-    plt.show()
+    # Compare T8 spectrum and calculated spectrum
+    plot_spectrum_comparison(
+        t8_spectrum,
+        t8_freqs,
+        filtered_spectrum,
+        filtered_freqs,
+        fmin,
+        fmax,
+        title1="T8 Spectrum",
+        title2="Calculated Spectrum",
+    )
