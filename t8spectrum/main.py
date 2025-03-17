@@ -7,6 +7,7 @@ from matplotlib import pyplot as plt
 from scipy.fft import rfft
 
 from t8spectrum.get_data import get_spectra, get_waveform
+from t8spectrum.url_params import UrlParams
 from t8spectrum.util.plots import plot_waveform
 
 HOST = "lzfs45.mirror.twave.io"
@@ -23,18 +24,17 @@ T8_PASSWORD = os.getenv("T8_PASSWORD")
 
 if __name__ == "__main__":
     time_utc = datetime.strptime(TIME, "%d-%m-%Y %H:%M:%S").replace(tzinfo=UTC)
-
-    waveform, sample_rate = get_waveform(
+    url_params = UrlParams(
         HOST, ID, MACHINE, POINT, PMODE, time_utc, T8_USER, T8_PASSWORD
     )
+
+    waveform, sample_rate = get_waveform(url_params)
 
     instants = np.linspace(0, len(waveform) / sample_rate, len(waveform))
 
     plot_waveform(waveform, sample_rate)
 
-    t8_spectrum, fmin, fmax = get_spectra(
-        HOST, ID, MACHINE, POINT, PMODE, time_utc, T8_USER, T8_PASSWORD
-    )
+    t8_spectrum, fmin, fmax = get_spectra(url_params)
 
     t8_freqs = np.linspace(fmin, fmax, len(t8_spectrum))
 
