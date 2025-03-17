@@ -4,9 +4,9 @@ from datetime import UTC, datetime
 import numpy as np
 from dotenv import load_dotenv
 from matplotlib import pyplot as plt
-from scipy.fft import fft, fftfreq
 
 from t8spectrum.get_data import get_spectra, get_waveform
+from t8spectrum.spectrum import calculate_spectrum
 from t8spectrum.url_params import UrlParams
 from t8spectrum.util.plots import plot_waveform
 from t8spectrum.waveform import preprocess_waveform
@@ -37,19 +37,11 @@ if __name__ == "__main__":
     plot_waveform(waveform, sample_rate)
 
     t8_spectrum, fmin, fmax = get_spectra(url_params)
-
     t8_freqs = np.linspace(fmin, fmax, len(t8_spectrum))
 
-    # Compute the FFT
-    spectrum = fft(preprocessed_waveform)
-    spectrum = np.abs(spectrum) / len(spectrum)
-
-    freqs = fftfreq(len(preprocessed_waveform), 1 / sample_rate)
-
-    # Filter the spectrum and frequencies to keep only the range between 50 and 2000 Hz
-    mask = (freqs >= fmin) & (freqs <= fmax)
-    filtered_spectrum = spectrum[mask]
-    filtered_freqs = freqs[mask]
+    filtered_spectrum, filtered_freqs = calculate_spectrum(
+        preprocessed_waveform, sample_rate, fmin, fmax
+    )
 
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))
 
