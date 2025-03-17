@@ -31,7 +31,9 @@ if __name__ == "__main__":
     waveform, sample_rate = get_waveform(url_params)
     preprocessed_waveform = preprocess_waveform(waveform)
 
-    instants = np.linspace(0, len(waveform) / sample_rate, len(waveform))
+    instants = np.linspace(
+        0, len(preprocessed_waveform) / sample_rate, len(preprocessed_waveform)
+    )
 
     plot_waveform(waveform, sample_rate)
 
