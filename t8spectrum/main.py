@@ -3,12 +3,11 @@ from datetime import UTC, datetime
 
 import numpy as np
 from dotenv import load_dotenv
-from matplotlib import pyplot as plt
 
 from t8spectrum.get_data import get_spectra, get_waveform
 from t8spectrum.spectrum import calculate_spectrum
 from t8spectrum.url_params import UrlParams
-from t8spectrum.util.plots import plot_waveform
+from t8spectrum.util.plots import plot_spectrum_comparison, plot_waveform
 from t8spectrum.waveform import preprocess_waveform
 
 HOST = "lzfs45.mirror.twave.io"
@@ -43,23 +42,13 @@ if __name__ == "__main__":
         preprocessed_waveform, sample_rate, fmin, fmax
     )
 
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))
-
-    # Plot the T8 spectrum
-    ax1.plot(t8_freqs, t8_spectrum)
-    ax1.set_xlim(fmin, fmax)
-    ax1.set_title("T8 Spectrum")
-    ax1.set_xlabel("Frequency (Hz)")
-    ax1.set_ylabel("Amplitude")
-    ax1.grid(True)
-
-    # Plot the computed FFT spectrum
-    ax2.plot(filtered_freqs, filtered_spectrum)
-    ax2.set_xlim(fmin, fmax)
-    ax2.set_title("Computed FFT Spectrum")
-    ax2.set_xlabel("Frequency (Hz)")
-    ax2.set_ylabel("Amplitude")
-    ax2.grid(True)
-
-    fig.tight_layout()
-    plt.show()
+    plot_spectrum_comparison(
+        t8_spectrum,
+        t8_freqs,
+        filtered_spectrum,
+        filtered_freqs,
+        fmin,
+        fmax,
+        title1="T8 Spectrum",
+        title2="Filtered Spectrum",
+    )
