@@ -9,6 +9,7 @@ from scipy.fft import fft, fftfreq
 from t8spectrum.get_data import get_spectra, get_waveform
 from t8spectrum.url_params import UrlParams
 from t8spectrum.util.plots import plot_waveform
+from t8spectrum.waveform import preprocess_waveform
 
 HOST = "lzfs45.mirror.twave.io"
 ID = "lzfs45"
@@ -29,6 +30,7 @@ if __name__ == "__main__":
     )
 
     waveform, sample_rate = get_waveform(url_params)
+    preprocessed_waveform = preprocess_waveform(waveform)
 
     instants = np.linspace(0, len(waveform) / sample_rate, len(waveform))
 
@@ -38,19 +40,11 @@ if __name__ == "__main__":
 
     t8_freqs = np.linspace(fmin, fmax, len(t8_spectrum))
 
-    # Apply a Hanning window
-    windowed_waveform = waveform * np.hanning(len(waveform))
-
-    # Zero padding to the next power of 2
-    n = len(windowed_waveform)
-    padded_length = 2 ** np.ceil(np.log2(n)).astype(int)
-    padded_waveform = np.pad(windowed_waveform, (0, padded_length - n), "constant")
-
     # Compute the FFT
-    spectrum = fft(padded_waveform)
+    spectrum = fft(preprocessed_waveform)
     spectrum = np.abs(spectrum) / len(spectrum)
 
-    freqs = fftfreq(padded_length, 1 / sample_rate)
+    freqs = fftfreq(len(preprocessed_waveform), 1 / sample_rate)
 
     # Filter the spectrum and frequencies to keep only the range between 50 and 2000 Hz
     mask = (freqs >= fmin) & (freqs <= fmax)
