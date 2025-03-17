@@ -4,7 +4,7 @@ from datetime import UTC, datetime
 import numpy as np
 from dotenv import load_dotenv
 from matplotlib import pyplot as plt
-from scipy.fft import rfft
+from scipy.fft import fft, fftfreq
 
 from t8spectrum.get_data import get_spectra, get_waveform
 from t8spectrum.url_params import UrlParams
@@ -38,11 +38,6 @@ if __name__ == "__main__":
 
     t8_freqs = np.linspace(fmin, fmax, len(t8_spectrum))
 
-    plt.plot(t8_spectrum)
-    plt.xlim(fmin, fmax)
-    plt.grid(True)
-    plt.show()
-
     # Apply a Hanning window
     windowed_waveform = waveform * np.hanning(len(waveform))
 
@@ -52,9 +47,33 @@ if __name__ == "__main__":
     padded_waveform = np.pad(windowed_waveform, (0, padded_length - n), "constant")
 
     # Compute the FFT
-    spectrum = rfft(padded_waveform)
+    spectrum = fft(padded_waveform)
+    spectrum = np.abs(spectrum) / len(spectrum)
 
-    plt.plot(spectrum)
-    plt.xlim(fmin, fmax)
-    plt.grid(True)
+    freqs = fftfreq(padded_length, 1 / sample_rate)
+
+    # Filter the spectrum and frequencies to keep only the range between 50 and 2000 Hz
+    mask = (freqs >= fmin) & (freqs <= fmax)
+    filtered_spectrum = spectrum[mask]
+    filtered_freqs = freqs[mask]
+
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))
+
+    # Plot the T8 spectrum
+    ax1.plot(t8_freqs, t8_spectrum)
+    ax1.set_xlim(fmin, fmax)
+    ax1.set_title("T8 Spectrum")
+    ax1.set_xlabel("Frequency (Hz)")
+    ax1.set_ylabel("Amplitude")
+    ax1.grid(True)
+
+    # Plot the computed FFT spectrum
+    ax2.plot(filtered_freqs, filtered_spectrum)
+    ax2.set_xlim(fmin, fmax)
+    ax2.set_title("Computed FFT Spectrum")
+    ax2.set_xlabel("Frequency (Hz)")
+    ax2.set_ylabel("Amplitude")
+    ax2.grid(True)
+
+    fig.tight_layout()
     plt.show()
