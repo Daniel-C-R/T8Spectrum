@@ -33,3 +33,6 @@ select = [
     "I",   # isort
 ]
 ignore = []
+
+[tool.poetry.scripts]
+t8-client = "t8_client.cli:cli"
