@@ -4,7 +4,7 @@ from zlib import compress
 import numpy as np
 import pytest
 
-from t8spectrum.util.decoder import zint_to_float
+from t8_client.util.decoder import zint_to_float
 
 
 def test_zint_to_float():

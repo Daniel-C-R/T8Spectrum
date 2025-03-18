@@ -1,5 +1,5 @@
 [project]
-name = "t8spectrum"
+name = "t8-client"
 version = "0.1.0"
 description = ""
 authors = [{ name = "Daniel Castaño Rodríguez", email = "UO288241@uniovi.es" }]

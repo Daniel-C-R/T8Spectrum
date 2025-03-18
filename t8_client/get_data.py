@@ -1,8 +1,7 @@
 import numpy as np
 import requests
-
-from t8spectrum.url_params import UrlParams
-from t8spectrum.util.decoder import zint_to_float
+from url_params import UrlParams
+from util.decoder import zint_to_float
 
 
 def get_waveform(url_params: UrlParams) -> tuple[np.ndarray, int]:
