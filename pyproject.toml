@@ -36,3 +36,4 @@ ignore = []
 
 [tool.poetry.scripts]
 t8-client = "t8_client.cli:cli"
+spectra-comparison = "scripts.spectra_comparison:main"

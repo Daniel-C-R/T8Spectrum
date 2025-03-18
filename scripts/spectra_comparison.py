@@ -14,7 +14,8 @@ POINT = "MAD31CY005"
 PMODE = "AM1"
 TIME = "11-04-2019 18:25:54"
 
-if __name__ == "__main__":
+
+def main():
     T8_USER = input("Enter T8 username: ")
     T8_PASSWORD = input("Enter T8 password: ")
 
@@ -33,10 +34,6 @@ if __name__ == "__main__":
     # Get waveform from API
     waveform, sample_rate = get_data.get_wave(**url_params)
     preprocessed_waveform = preprocess_waveform(waveform)
-
-    instants = np.linspace(
-        0, len(preprocessed_waveform) / sample_rate, len(preprocessed_waveform)
-    )
 
     plot_waveform(waveform, sample_rate)
 
@@ -60,3 +57,7 @@ if __name__ == "__main__":
         title1="T8 Spectrum",
         title2="Calculated Spectrum",
     )
+
+
+if __name__ == "__main__":
+    main()
