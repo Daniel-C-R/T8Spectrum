@@ -1,10 +1,8 @@
-import os
 from datetime import UTC, datetime
 
-import get_data
 import numpy as np
-from dotenv import load_dotenv
 
+from t8_client import get_data
 from t8_client.spectrum import calculate_spectrum
 from t8_client.util.plots import plot_spectrum_comparison, plot_waveform
 from t8_client.waveform import preprocess_waveform
@@ -16,12 +14,10 @@ POINT = "MAD31CY005"
 PMODE = "AM1"
 TIME = "11-04-2019 18:25:54"
 
-load_dotenv()
-
-T8_USER = os.getenv("T8_USER")
-T8_PASSWORD = os.getenv("T8_PASSWORD")
-
 if __name__ == "__main__":
+    T8_USER = input("Enter T8 username: ")
+    T8_PASSWORD = input("Enter T8 password: ")
+
     time_utc = datetime.strptime(TIME, "%d-%m-%Y %H:%M:%S").replace(tzinfo=UTC)
     url_params = {
         "host": HOST,
@@ -64,9 +60,3 @@ if __name__ == "__main__":
         title1="T8 Spectrum",
         title2="Calculated Spectrum",
     )
-
-    # Get wave and spectra list
-    wave_list = list(get_data.get_wave_list(**url_params))
-    print(wave_list)
-    spectra_list = list(get_data.get_spectra(**url_params))
-    print(spectra_list)
