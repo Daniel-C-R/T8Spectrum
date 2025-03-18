@@ -1,9 +1,9 @@
 import os
 from datetime import UTC, datetime
 
+import get_data
 import numpy as np
 from dotenv import load_dotenv
-from get_data import get_spectra, get_waveform
 from spectrum import calculate_spectrum
 from util.plots import plot_spectrum_comparison, plot_waveform
 from waveform import preprocess_waveform
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     }
 
     # Get waveform from API
-    waveform, sample_rate = get_waveform(**url_params)
+    waveform, sample_rate = get_data.get_wave(**url_params)
     preprocessed_waveform = preprocess_waveform(waveform)
 
     instants = np.linspace(
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     plot_waveform(waveform, sample_rate)
 
     # Get T8 spectrum from API
-    t8_spectrum, fmin, fmax = get_spectra(**url_params)
+    t8_spectrum, fmin, fmax = get_data.get_spectrum(**url_params)
     t8_freqs = np.linspace(fmin, fmax, len(t8_spectrum))
 
     # Calculate spectrum from waveform
@@ -63,3 +63,9 @@ if __name__ == "__main__":
         title1="T8 Spectrum",
         title2="Calculated Spectrum",
     )
+
+    # Get wave and spectra list
+    wave_list = list(get_data.get_wave_list(**url_params))
+    print(wave_list)
+    spectra_list = list(get_data.get_spectra(**url_params))
+    print(spectra_list)

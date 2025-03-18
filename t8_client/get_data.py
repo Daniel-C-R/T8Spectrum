@@ -1,10 +1,50 @@
 import numpy as np
 import requests
 from util.decoder import zint_to_float
-from util.timestamp import datetime_to_timestamp
+from util.timestamp import datetime_to_timestamp, timestamp_to_iso_string
 
 
-def get_waveform(**kwargs) -> tuple[np.ndarray, int]:
+def get_wave_list(**kwargs):
+    """
+    Retrieves a list of wave timestamps from a specified host and endpoint.
+
+    Args:
+        **kwargs: Arbitrary keyword arguments.
+            host (str): The host URL.
+            id_ (str): The ID for the endpoint.
+            machine (str): The machine identifier.
+            point (str): The point identifier.
+            pmode (str): The mode parameter.
+            t8_user (str): The username for authentication.
+            t8_password (str): The password for authentication.
+
+    Yields:
+        str: ISO formatted timestamp string for each valid wave item.
+
+    Raises:
+        Exception: If the request to the server fails.
+    """
+    host = kwargs["host"]
+    id_ = kwargs["id"]
+    machine = kwargs["machine"]
+    point = kwargs["point"]
+    pmode = kwargs["pmode"]
+    t8_user = kwargs["t8_user"]
+    t8_password = kwargs["t8_password"]
+
+    url = f"https://{host}/{id_}/rest/waves/{machine}/{point}/{pmode}"
+    response = requests.get(url, auth=(t8_user, t8_password))
+    if response.status_code != 200:
+        raise Exception(f"Failed to get waveform: {response.text}")
+    response = response.json()
+
+    for item in response["_items"]:
+        timestamp = int(item["_links"]["self"].split("/")[-1])
+        if timestamp != 0:
+            yield timestamp_to_iso_string(timestamp)
+
+
+def get_wave(**kwargs) -> tuple[np.ndarray, int]:
     """
     Fetches waveform data from a specified host.
 
@@ -40,9 +80,48 @@ def get_waveform(**kwargs) -> tuple[np.ndarray, int]:
     return waveform * factor, sample_rate
 
 
-def get_spectra(**kwargs) -> tuple[np.ndarray]:
+def get_spectra(**kwargs):
     """
-    Fetches spectral data from a specified host and endpoint.
+    Fetches spectra data from a specified host and yields timestamps in ISO format.
+
+    Args:
+        host (str): The host URL.
+        id_ (str): The ID for the spectra request.
+        machine (str): The machine identifier.
+        point (str): The point identifier.
+        pmode (str): The mode of the spectra.
+        t8_user (str): The username for authentication.
+        t8_password (str): The password for authentication.
+
+    Yields:
+        str: Timestamps in ISO format.
+
+    Raises:
+        Exception: If the request to get spectra list fails.
+    """
+    host = kwargs["host"]
+    id_ = kwargs["id"]
+    machine = kwargs["machine"]
+    point = kwargs["point"]
+    pmode = kwargs["pmode"]
+    t8_user = kwargs["t8_user"]
+    t8_password = kwargs["t8_password"]
+
+    url = f"https://{host}/{id_}/rest/spectra/{machine}/{point}/{pmode}"
+    response = requests.get(url, auth=(t8_user, t8_password))
+    if response.status_code != 200:
+        raise Exception(f"Failed to get spectra list: {response.text}")
+    response = response.json()
+
+    for item in response["_items"]:
+        timestamp = int(item["_links"]["self"].split("/")[-1])
+        if timestamp != 0:
+            yield timestamp_to_iso_string(timestamp)
+
+
+def get_spectrum(**kwargs) -> tuple[np.ndarray]:
+    """
+    Fetches spectrum data from a specified host and endpoint.
 
     Args:
         kwargs: The URL parameters as keyword arguments.
