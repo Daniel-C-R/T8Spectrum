@@ -4,9 +4,10 @@ from datetime import UTC, datetime
 import get_data
 import numpy as np
 from dotenv import load_dotenv
-from spectrum import calculate_spectrum
-from util.plots import plot_spectrum_comparison, plot_waveform
-from waveform import preprocess_waveform
+
+from t8_client.spectrum import calculate_spectrum
+from t8_client.util.plots import plot_spectrum_comparison, plot_waveform
+from t8_client.waveform import preprocess_waveform
 
 HOST = "lzfs45.mirror.twave.io"
 ID = "lzfs45"

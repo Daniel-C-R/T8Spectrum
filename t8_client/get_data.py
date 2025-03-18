@@ -1,7 +1,8 @@
 import numpy as np
 import requests
-from util.decoder import zint_to_float
-from util.timestamp import datetime_to_timestamp, timestamp_to_iso_string
+
+from t8_client.util.decoder import zint_to_float
+from t8_client.util.timestamp import datetime_to_timestamp, timestamp_to_iso_string
 
 
 def get_wave_list(**kwargs):
