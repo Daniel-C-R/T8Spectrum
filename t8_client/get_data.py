@@ -1,15 +1,15 @@
 import numpy as np
 import requests
-from url_params import UrlParams
 from util.decoder import zint_to_float
+from util.timestamp import datetime_to_timestamp
 
 
-def get_waveform(url_params: UrlParams) -> tuple[np.ndarray, int]:
+def get_waveform(**kwargs) -> tuple[np.ndarray, int]:
     """
     Fetches waveform data from a specified host.
 
     Args:
-        url_params (UrlParams): The URL parameters
+        kwargs: The URL parameters as keyword arguments.
 
     Returns:
         tuple[np.ndarray, int]: A tuple containing the waveform data as a numpy array
@@ -18,8 +18,17 @@ def get_waveform(url_params: UrlParams) -> tuple[np.ndarray, int]:
     Raises:
         Exception: If the request to fetch the waveform data fails.
     """
-    url = url_params.generate_url("waves")
-    response = requests.get(url, auth=(url_params.t8_user, url_params.t8_password))
+    host = kwargs["host"]
+    id_ = kwargs["id"]
+    machine = kwargs["machine"]
+    point = kwargs["point"]
+    pmode = kwargs["pmode"]
+    time = datetime_to_timestamp(kwargs["time"])
+    t8_user = kwargs["t8_user"]
+    t8_password = kwargs["t8_password"]
+
+    url = f"https://{host}/{id_}/rest/waves/{machine}/{point}/{pmode}/{time}"
+    response = requests.get(url, auth=(t8_user, t8_password))
     if response.status_code != 200:
         raise Exception(f"Failed to get waveform: {response.text}")
     response = response.json()
@@ -31,12 +40,12 @@ def get_waveform(url_params: UrlParams) -> tuple[np.ndarray, int]:
     return waveform * factor, sample_rate
 
 
-def get_spectra(url_params: UrlParams) -> tuple[np.ndarray]:
+def get_spectra(**kwargs) -> tuple[np.ndarray]:
     """
     Fetches spectral data from a specified host and endpoint.
 
     Args:
-        url_params (UrlParams): The URL parameters object.
+        kwargs: The URL parameters as keyword arguments.
 
     Returns:
         tuple[np.ndarray]: A tuple containing the spectral data as numpy arrays.
@@ -44,8 +53,17 @@ def get_spectra(url_params: UrlParams) -> tuple[np.ndarray]:
     Raises:
         Exception: If the request to the server fails.
     """
-    url = url_params.generate_url("spectra")
-    response = requests.get(url, auth=(url_params.t8_user, url_params.t8_password))
+    host = kwargs["host"]
+    id_ = kwargs["id"]
+    machine = kwargs["machine"]
+    point = kwargs["point"]
+    pmode = kwargs["pmode"]
+    time = datetime_to_timestamp(kwargs["time"])
+    t8_user = kwargs["t8_user"]
+    t8_password = kwargs["t8_password"]
+
+    url = f"https://{host}/{id_}/rest/spectra/{machine}/{point}/{pmode}/{time}"
+    response = requests.get(url, auth=(t8_user, t8_password))
     if response.status_code != 200:
         raise Exception(f"Failed to get spectra: {response.text}")
     response = response.json()

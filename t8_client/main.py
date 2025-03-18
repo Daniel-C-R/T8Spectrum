@@ -5,7 +5,6 @@ import numpy as np
 from dotenv import load_dotenv
 from get_data import get_spectra, get_waveform
 from spectrum import calculate_spectrum
-from url_params import UrlParams
 from util.plots import plot_spectrum_comparison, plot_waveform
 from waveform import preprocess_waveform
 
@@ -23,12 +22,19 @@ T8_PASSWORD = os.getenv("T8_PASSWORD")
 
 if __name__ == "__main__":
     time_utc = datetime.strptime(TIME, "%d-%m-%Y %H:%M:%S").replace(tzinfo=UTC)
-    url_params = UrlParams(
-        HOST, ID, MACHINE, POINT, PMODE, time_utc, T8_USER, T8_PASSWORD
-    )
+    url_params = {
+        "host": HOST,
+        "id": ID,
+        "machine": MACHINE,
+        "point": POINT,
+        "pmode": PMODE,
+        "time": time_utc,
+        "t8_user": T8_USER,
+        "t8_password": T8_PASSWORD,
+    }
 
     # Get waveform from API
-    waveform, sample_rate = get_waveform(url_params)
+    waveform, sample_rate = get_waveform(**url_params)
     preprocessed_waveform = preprocess_waveform(waveform)
 
     instants = np.linspace(
@@ -38,7 +44,7 @@ if __name__ == "__main__":
     plot_waveform(waveform, sample_rate)
 
     # Get T8 spectrum from API
-    t8_spectrum, fmin, fmax = get_spectra(url_params)
+    t8_spectrum, fmin, fmax = get_spectra(**url_params)
     t8_freqs = np.linspace(fmin, fmax, len(t8_spectrum))
 
     # Calculate spectrum from waveform
