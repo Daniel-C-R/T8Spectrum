@@ -1,3 +1,4 @@
+import csv
 import os
 
 import click
@@ -82,8 +83,20 @@ def get_wave(ctx, machine, point, pmode, time):
         t8_user=ctx.obj["T8_USER"],
         t8_password=ctx.obj["T8_PASSWORD"],
     )
+
+    # Print the waveform data
     for sample in waveform:
         print(sample)
+
+    # Save the waveform data to a CSV file
+    output_dir = "output"
+    os.makedirs(output_dir, exist_ok=True)
+    filename = f"{output_dir}/wave_{machine}_{point}_{pmode}_{time}.csv"
+    with open(filename, mode="w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(["Samples"])
+        for sample in waveform:
+            writer.writerow([sample])
 
 
 if __name__ == "__main__":
