@@ -2,7 +2,7 @@ import numpy as np
 import requests
 
 from t8_client.util.decoder import zint_to_float
-from t8_client.util.timestamp import datetime_to_timestamp, timestamp_to_iso_string
+from t8_client.util.timestamp import iso_string_to_timestamp, timestamp_to_iso_string
 
 
 def get_wave_list(**kwargs):
@@ -64,7 +64,7 @@ def get_wave(**kwargs) -> tuple[np.ndarray, int]:
     machine = kwargs["machine"]
     point = kwargs["point"]
     pmode = kwargs["pmode"]
-    time = datetime_to_timestamp(kwargs["time"])
+    time = iso_string_to_timestamp(kwargs["time"])
     t8_user = kwargs["t8_user"]
     t8_password = kwargs["t8_password"]
 
@@ -138,7 +138,7 @@ def get_spectrum(**kwargs) -> tuple[np.ndarray]:
     machine = kwargs["machine"]
     point = kwargs["point"]
     pmode = kwargs["pmode"]
-    time = datetime_to_timestamp(kwargs["time"])
+    time = iso_string_to_timestamp(kwargs["time"])
     t8_user = kwargs["t8_user"]
     t8_password = kwargs["t8_password"]
 

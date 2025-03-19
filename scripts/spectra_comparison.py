@@ -1,5 +1,3 @@
-from datetime import UTC, datetime
-
 import numpy as np
 
 from t8_client import get_data
@@ -12,21 +10,20 @@ ID = "lzfs45"
 MACHINE = "LP_Turbine"
 POINT = "MAD31CY005"
 PMODE = "AM1"
-TIME = "11-04-2019 18:25:54"
+TIME = "2019-04-11T18:25:54"
 
 
 def main():
     T8_USER = input("Enter T8 username: ")
     T8_PASSWORD = input("Enter T8 password: ")
 
-    time_utc = datetime.strptime(TIME, "%d-%m-%Y %H:%M:%S").replace(tzinfo=UTC)
     url_params = {
         "host": HOST,
         "id": ID,
         "machine": MACHINE,
         "point": POINT,
         "pmode": PMODE,
-        "time": time_utc,
+        "time": TIME,
         "t8_user": T8_USER,
         "t8_password": T8_PASSWORD,
     }
