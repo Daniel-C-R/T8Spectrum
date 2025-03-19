@@ -1,9 +1,9 @@
-import csv
 import os
 
 import click
 
 from t8_client import get_data
+from t8_client.util.csv import save_array_to_csv
 
 
 @click.group()
@@ -89,14 +89,9 @@ def get_wave(ctx, machine, point, pmode, time):
         print(sample)
 
     # Save the waveform data to a CSV file
-    output_dir = "output"
-    os.makedirs(output_dir, exist_ok=True)
-    filename = f"{output_dir}/wave_{machine}_{point}_{pmode}_{time}.csv"
-    with open(filename, mode="w", newline="") as file:
-        writer = csv.writer(file)
-        writer.writerow(["Samples"])
-        for sample in waveform:
-            writer.writerow([sample])
+    filename = f"wave_{machine}_{point}_{pmode}_{time}.csv"
+    file_path = os.path.join("output", filename)
+    save_array_to_csv(file_path, waveform, "Samples")
 
 
 if __name__ == "__main__":
