@@ -64,5 +64,27 @@ def list_spectra(ctx, machine, point, pmode):
         print(spectra)
 
 
+@cli.command(
+    name="get-wave",
+    help="Get the wave data for a given machine, point, processing mode, and time.",
+)
+@pmode_params
+@click.option("-t", "--time", required=True, help="Time of the wave")
+@click.pass_context
+def get_wave(ctx, machine, point, pmode, time):
+    waveform, _ = get_data.get_wave(
+        host=ctx.obj["HOST"],
+        id=ctx.obj["ID"],
+        machine=machine,
+        point=point,
+        pmode=pmode,
+        time=time,
+        t8_user=ctx.obj["T8_USER"],
+        t8_password=ctx.obj["T8_PASSWORD"],
+    )
+    for sample in waveform:
+        print(sample)
+
+
 if __name__ == "__main__":
     cli()
