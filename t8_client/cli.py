@@ -19,12 +19,21 @@ def cli(ctx):
 
 
 def pmode_params(func):
-    func = click.option("-M", "--machine", required=True, help="Machine tag")(func)
-    func = click.option("-p", "--point", required=True, help="Point tag")(func)
-    func = click.option("-m", "--pmode", required=True, help="Processing mode tag")(
-        func
-    )
+    func = click.option("-M", "--machine", help="Machine tag")(func)
+    func = click.option(
+        "-p", "--point", help="Point tag or combined tag in the format M1:P1:PM1"
+    )(func)
+    func = click.option("-m", "--pmode", help="Processing mode tag")(func)
     return func
+
+
+def parse_combined_tag(ctx, param, value):
+    if value and ":" in value:
+        machine, point, pmode = value.split(":")
+        ctx.params["machine"] = machine
+        ctx.params["point"] = point
+        ctx.params["pmode"] = pmode
+    return value
 
 
 @cli.command(
@@ -35,12 +44,14 @@ def pmode_params(func):
 @pmode_params
 @click.pass_context
 def list_waves(ctx, machine, point, pmode):
+    if point and ":" in point:
+        parse_combined_tag(ctx, None, point)
     for wave in get_data.get_wave_list(
         host=ctx.obj["HOST"],
         id=ctx.obj["ID"],
-        machine=machine,
-        point=point,
-        pmode=pmode,
+        machine=ctx.params["machine"],
+        point=ctx.params["point"],
+        pmode=ctx.params["pmode"],
         t8_user=ctx.obj["T8_USER"],
         t8_password=ctx.obj["T8_PASSWORD"],
     ):
@@ -55,12 +66,14 @@ def list_waves(ctx, machine, point, pmode):
 @pmode_params
 @click.pass_context
 def list_spectra(ctx, machine, point, pmode):
+    if point and ":" in point:
+        parse_combined_tag(ctx, None, point)
     for spectra in get_data.get_spectra(
         host=ctx.obj["HOST"],
         id=ctx.obj["ID"],
-        machine=machine,
-        point=point,
-        pmode=pmode,
+        machine=ctx.params["machine"],
+        point=ctx.params["point"],
+        pmode=ctx.params["pmode"],
         t8_user=ctx.obj["T8_USER"],
         t8_password=ctx.obj["T8_PASSWORD"],
     ):
@@ -75,12 +88,14 @@ def list_spectra(ctx, machine, point, pmode):
 @click.option("-t", "--time", required=True, help="Time of the wave")
 @click.pass_context
 def get_wave(ctx, machine, point, pmode, time):
+    if point and ":" in point:
+        parse_combined_tag(ctx, None, point)
     waveform, _ = get_data.get_wave(
         host=ctx.obj["HOST"],
         id=ctx.obj["ID"],
-        machine=machine,
-        point=point,
-        pmode=pmode,
+        machine=ctx.params["machine"],
+        point=ctx.params["point"],
+        pmode=ctx.params["pmode"],
         time=time,
         t8_user=ctx.obj["T8_USER"],
         t8_password=ctx.obj["T8_PASSWORD"],
@@ -91,7 +106,10 @@ def get_wave(ctx, machine, point, pmode, time):
         print(sample)
 
     # Save the waveform data to a CSV file
-    filename = f"wave_{machine}_{point}_{pmode}_{time}.csv"
+    filename = (
+        f"wave_{ctx.params['machine']}_{ctx.params['point']}_"
+        + f"{ctx.params['pmode']}_{time}.csv"
+    )
     file_path = os.path.join("output", filename)
     save_array_to_csv(file_path, waveform, "Samples")
 
@@ -104,12 +122,14 @@ def get_wave(ctx, machine, point, pmode, time):
 @click.option("-t", "--time", required=True, help="Time of the spectrum")
 @click.pass_context
 def get_spectrum(ctx, machine, point, pmode, time):
+    if point and ":" in point:
+        parse_combined_tag(ctx, None, point)
     spectrum = get_data.get_spectrum(
         host=ctx.obj["HOST"],
         id=ctx.obj["ID"],
-        machine=machine,
-        point=point,
-        pmode=pmode,
+        machine=ctx.params["machine"],
+        point=ctx.params["point"],
+        pmode=ctx.params["pmode"],
         time=time,
         t8_user=ctx.obj["T8_USER"],
         t8_password=ctx.obj["T8_PASSWORD"],
@@ -120,7 +140,10 @@ def get_spectrum(ctx, machine, point, pmode, time):
         print(sample)
 
     # Save the spectrum data to a CSV file
-    filename = f"spectrum_{machine}_{point}_{pmode}_{time}.csv"
+    filename = (
+        f"spectrum_{ctx.params['machine']}_{ctx.params['point']}_"
+        + f"{ctx.params['pmode']}_{time}.csv"
+    )
     file_path = os.path.join("output", filename)
     save_array_to_csv(file_path, spectrum, "Samples")
 
@@ -133,12 +156,14 @@ def get_spectrum(ctx, machine, point, pmode, time):
 @pmode_params
 @click.pass_context
 def plot_wave(ctx, machine, point, pmode, time):
+    if point and ":" in point:
+        parse_combined_tag(ctx, None, point)
     waveform, sample_rate = get_data.get_wave(
         host=ctx.obj["HOST"],
         id=ctx.obj["ID"],
-        machine=machine,
-        point=point,
-        pmode=pmode,
+        machine=ctx.params["machine"],
+        point=ctx.params["point"],
+        pmode=ctx.params["pmode"],
         time=time,
         t8_user=ctx.obj["T8_USER"],
         t8_password=ctx.obj["T8_PASSWORD"],
@@ -156,12 +181,14 @@ def plot_wave(ctx, machine, point, pmode, time):
 @pmode_params
 @click.pass_context
 def plot_spectrum_cmd(ctx, machine, point, pmode, time):
+    if point and ":" in point:
+        parse_combined_tag(ctx, None, point)
     spectrum, fmin, fmax = get_data.get_spectrum(
         host=ctx.obj["HOST"],
         id=ctx.obj["ID"],
-        machine=machine,
-        point=point,
-        pmode=pmode,
+        machine=ctx.params["machine"],
+        point=ctx.params["point"],
+        pmode=ctx.params["pmode"],
         time=time,
         t8_user=ctx.obj["T8_USER"],
         t8_password=ctx.obj["T8_PASSWORD"],
