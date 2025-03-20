@@ -4,26 +4,26 @@
 
 El objetivo de este proyecto es poner el práctica las habilidades para el desarrollo de una aplicación "real" adquiridas al comienzo de la prácticas en TWave (control de versiones con Git, gestión de proyectos con Poetry, creación de tests, documentación del código, etc).
 
-El ejercicio propuesto consiste en obtener la forma de onda y el espectro de una señal almacenada en un dispositivo T8 (los equipos que desarrolla la empresa) por medio de su API REST. Posteriormente, a partir del *waveform* se calculará su espectro y se comparará con el obtenido de la API para comprobar que los cálculos son correctos.
+La finalidad de esta aplicación es servir como cliente para obtener datos de la API REST de los dispositivos T8 que desarrolla la empresa. Concretamente, obtienen datos relativos a las formas de onda y espectros de las señales almacenadas en este.
 
-## Configuración
+## Configuración y ejecución
 
 Para poder ejecutar este código, se requiere disponer de la herramienta Poetry e instalar las dependencias con `poetry install`.
 
-También, es necesario crear un archivo `.env` en el que se guarden el usuario y contraseña del equipo T8. Este archivo nunca debe ser versionado. Se ha incluido una plantilla de cómo debe ser este archivo en `.env.example`. De todas formas se incluye la estructura de este archivo a continuación:
+Respecto a la ejecución de la aplicación, primero es necesario especificar en las variables de entorno del shell actual el host, ID, usuario y contraseña del dispositivo T8 al que se dese conectar. A continuación se muestra un ejemplo de los comandos a ejecutar para asignar dichas variables de entorno:
 
 ```shell
-T8_USER=
-T8_PASSWORD=
+# Estos datos son sólo de ejemplo
+export HOST="lzfs45.mirror.twave.io"
+export ID="lzfs45"
+export T8_USER="user"
+export T8_PASSWORD="password"
 ```
 
-En estos momentos, al comienzo del archivo `t8spectrum/main.py` se definen como constantes los parámetros de las URLs a consular. Estos son la dirección del equipo T8 y su identificador, y la máquina, punto, modo de procesamiento e instante de tiempo a consultar. Para poder lanzar las peticiones a otro equipo T8 sería necesario modificar el código.
+A continuación, la aplicación se puede ejecutar de dos formas. La primera de ellas es activando el entorno virtual que crea poetry, que podrá disponible el comando `t8-client`. La otra forma es simplemente ejecutando `poetry run t8-client` sin necesidad de activas ningún entorno.
 
-## Ejecución
+Para ver los subcomandos disponibles en la aplicación y una guía rápida de cómo utilizarlos se puede ejecutar `t8-client --help` o `poetry run t8-client --help` dependiendo de la opción que sa haya elegido.
 
-El código se puede ejecuar de dos formas, una de ellas sería ejecutando simplemente `poetry run python t8spectrum/main.py`, o activando el entorno virtual y ejecutando el script:
+## Otros
 
-```shell
-poetry env activate
-python t8spectrum/main.py
-```
+La primera tarea de este proyecto era implementar una aplicación que obtuviese una forma de onda desde la API, calculase su espectro y lo comparase con el espectro que se obtiene también desde la API del T8. Ese programa que se hizo en un principio ha sido movido a la carpeta `scripts` con el nombre `spectra_comparison.py`. Puede ser ejecutado con el comando `spectra-comparison` (o `poetry run spectra-comparison`). Eso sí, hay que tener en cuenta que los parámetros de las URLs a lanzar las peticiones están fijados en el código, por lo que sería necesario cambiarlos primero. También, el usuario y contraseña del T8 deben ser pasados por teclado.
