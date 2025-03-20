@@ -94,5 +94,34 @@ def get_wave(ctx, machine, point, pmode, time):
     save_array_to_csv(file_path, waveform, "Samples")
 
 
+@cli.command(
+    name="get-spectrum",
+    help="Get the spectrum data for a given machine, point, processing mode, and time.",
+)
+@pmode_params
+@click.option("-t", "--time", required=True, help="Time of the spectrum")
+@click.pass_context
+def get_spectrum(ctx, machine, point, pmode, time):
+    spectrum = get_data.get_spectrum(
+        host=ctx.obj["HOST"],
+        id=ctx.obj["ID"],
+        machine=machine,
+        point=point,
+        pmode=pmode,
+        time=time,
+        t8_user=ctx.obj["T8_USER"],
+        t8_password=ctx.obj["T8_PASSWORD"],
+    )[0]
+
+    # Print the spectrum data
+    for sample in spectrum:
+        print(sample)
+
+    # Save the spectrum data to a CSV file
+    filename = f"spectrum_{machine}_{point}_{pmode}_{time}.csv"
+    file_path = os.path.join("output", filename)
+    save_array_to_csv(file_path, spectrum, "Samples")
+
+
 if __name__ == "__main__":
     cli()
