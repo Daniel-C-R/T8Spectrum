@@ -4,6 +4,7 @@ import click
 
 from t8_client import get_data
 from t8_client.util.csv import save_array_to_csv
+from t8_client.util.plots import plot_waveform
 
 
 @click.group()
@@ -121,6 +122,28 @@ def get_spectrum(ctx, machine, point, pmode, time):
     filename = f"spectrum_{machine}_{point}_{pmode}_{time}.csv"
     file_path = os.path.join("output", filename)
     save_array_to_csv(file_path, spectrum, "Samples")
+
+
+@cli.command(
+    name="plot-wave",
+    help="Plot the wave data for a given machine, point, processing mode, and time.",
+)
+@click.option("-t", "--time", required=True, help="Time of the wave")
+@pmode_params
+@click.pass_context
+def plot_wave(ctx, machine, point, pmode, time):
+    waveform, sample_rate = get_data.get_wave(
+        host=ctx.obj["HOST"],
+        id=ctx.obj["ID"],
+        machine=machine,
+        point=point,
+        pmode=pmode,
+        time=time,
+        t8_user=ctx.obj["T8_USER"],
+        t8_password=ctx.obj["T8_PASSWORD"],
+    )
+
+    plot_waveform(waveform, sample_rate)
 
 
 if __name__ == "__main__":
