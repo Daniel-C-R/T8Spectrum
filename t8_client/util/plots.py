@@ -17,6 +17,22 @@ def plot_waveform(waveform, sample_rate):
     plt.show()
 
 
+def plot_spectrum(spectrum, freqs, fmin, fmax):
+    """
+    Plots a spectrum.
+
+    Args:
+        spectrum (np.ndarray): The spectrum to plot.
+        freqs (np.ndarray): The frequencies corresponding to the spectrum.
+        fmin (float): The minimum frequency to plot.
+        fmax (float): The maximum frequency to plot.
+    """
+    plt.plot(freqs, spectrum)
+    plt.xlim(fmin, fmax)
+    plt.grid(True)
+    plt.show()
+
+
 def plot_spectrum_comparison(
     spectrum1: np.ndarray,
     freqs1: np.ndarray,

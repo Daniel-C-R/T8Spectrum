@@ -1,16 +1,16 @@
 [project]
-name = "t8spectrum"
+name = "t8-client"
 version = "0.1.0"
 description = ""
 authors = [{ name = "Daniel Castaño Rodríguez", email = "UO288241@uniovi.es" }]
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "python-dotenv (>=1.0.1,<2.0.0)",
     "requests (>=2.32.3,<3.0.0)",
     "numpy (>=2.2.3,<3.0.0)",
     "matplotlib (>=3.10.1,<4.0.0)",
     "scipy (>=1.15.2,<2.0.0)",
+    "click (>=8.1.8,<9.0.0)",
 ]
 
 
@@ -22,6 +22,7 @@ build-backend = "poetry.core.masonry.api"
 ruff = "^0.9.9"
 pytest = "^8.3.5"
 pre-commit = "^4.1.0"
+pytest-mock = "^3.14.0"
 
 [tool.ruff.lint]
 select = [
@@ -33,3 +34,7 @@ select = [
     "I",   # isort
 ]
 ignore = []
+
+[tool.poetry.scripts]
+t8-client = "t8_client.cli:cli"
+spectra-comparison = "scripts.spectra_comparison:main"
