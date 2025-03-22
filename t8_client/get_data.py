@@ -1,11 +1,15 @@
+from collections.abc import Generator
+
 import numpy as np
 import requests
 
 from t8_client.util.decoder import zint_to_float
 from t8_client.util.timestamp import iso_string_to_timestamp, timestamp_to_iso_string
 
+HTTP_STATUS_OK = 200
 
-def get_wave_list(**kwargs):
+
+def get_wave_list(**kwargs: dict) -> Generator[str]:
     """
     Retrieves a list of wave timestamps from a specified host and endpoint.
 
@@ -35,7 +39,7 @@ def get_wave_list(**kwargs):
 
     url = f"https://{host}/{id_}/rest/waves/{machine}/{point}/{pmode}"
     response = requests.get(url, auth=(t8_user, t8_password))
-    if response.status_code != 200:
+    if response.status_code != HTTP_STATUS_OK:
         raise Exception(f"Failed to get waveform: {response.text}")
     response = response.json()
 
@@ -45,7 +49,7 @@ def get_wave_list(**kwargs):
             yield timestamp_to_iso_string(timestamp)
 
 
-def get_wave(**kwargs) -> tuple[np.ndarray, int]:
+def get_wave(**kwargs: dict) -> tuple[np.ndarray, int]:
     """
     Fetches waveform data from a specified host.
 
@@ -70,7 +74,7 @@ def get_wave(**kwargs) -> tuple[np.ndarray, int]:
 
     url = f"https://{host}/{id_}/rest/waves/{machine}/{point}/{pmode}/{time}"
     response = requests.get(url, auth=(t8_user, t8_password))
-    if response.status_code != 200:
+    if response.status_code != HTTP_STATUS_OK:
         raise Exception(f"Failed to get waveform: {response.text}")
     response = response.json()
 
@@ -81,7 +85,7 @@ def get_wave(**kwargs) -> tuple[np.ndarray, int]:
     return waveform * factor, sample_rate
 
 
-def get_spectra(**kwargs):
+def get_spectra(**kwargs: dict) -> Generator[str]:
     """
     Fetches spectra data from a specified host and yields timestamps in ISO format.
 
@@ -110,7 +114,7 @@ def get_spectra(**kwargs):
 
     url = f"https://{host}/{id_}/rest/spectra/{machine}/{point}/{pmode}"
     response = requests.get(url, auth=(t8_user, t8_password))
-    if response.status_code != 200:
+    if response.status_code != HTTP_STATUS_OK:
         raise Exception(f"Failed to get spectra list: {response.text}")
     response = response.json()
 
@@ -120,7 +124,7 @@ def get_spectra(**kwargs):
             yield timestamp_to_iso_string(timestamp)
 
 
-def get_spectrum(**kwargs) -> tuple[np.ndarray]:
+def get_spectrum(**kwargs: dict) -> tuple[np.ndarray]:
     """
     Fetches spectrum data from a specified host and endpoint.
 
@@ -144,7 +148,7 @@ def get_spectrum(**kwargs) -> tuple[np.ndarray]:
 
     url = f"https://{host}/{id_}/rest/spectra/{machine}/{point}/{pmode}/{time}"
     response = requests.get(url, auth=(t8_user, t8_password))
-    if response.status_code != 200:
+    if response.status_code != HTTP_STATUS_OK:
         raise Exception(f"Failed to get spectra: {response.text}")
     response = response.json()
 

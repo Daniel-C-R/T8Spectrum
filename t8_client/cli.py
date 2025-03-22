@@ -1,3 +1,6 @@
+# ruff: noqa: ANN001
+# ruff: noqa: ANN201
+# ruff: noqa: ARG001
 import os
 
 import click
@@ -23,8 +26,7 @@ def pmode_params(func):
     func = click.option(
         "-p", "--point", help="Point tag or combined tag in the format M1:P1:PM1"
     )(func)
-    func = click.option("-m", "--pmode", help="Processing mode tag")(func)
-    return func
+    return click.option("-m", "--pmode", help="Processing mode tag")(func)
 
 
 def parse_combined_tag(ctx, param, value):

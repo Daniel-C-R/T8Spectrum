@@ -13,9 +13,9 @@ PMODE = "AM1"
 TIME = "2019-04-11T18:25:54"
 
 
-def main():
-    T8_USER = input("Enter T8 username: ")
-    T8_PASSWORD = input("Enter T8 password: ")
+def main() -> None:
+    t8_user = input("Enter T8 username: ")
+    t8_password = input("Enter T8 password: ")
 
     url_params = {
         "host": HOST,
@@ -24,8 +24,8 @@ def main():
         "point": POINT,
         "pmode": PMODE,
         "time": TIME,
-        "t8_user": T8_USER,
-        "t8_password": T8_PASSWORD,
+        "t8_user": t8_user,
+        "t8_password": t8_password,
     }
 
     # Get waveform from API
@@ -45,14 +45,18 @@ def main():
 
     # Compare T8 spectrum and calculated spectrum
     plot_spectrum_comparison(
-        t8_spectrum,
-        t8_freqs,
-        filtered_spectrum,
-        filtered_freqs,
-        fmin,
-        fmax,
-        title1="T8 Spectrum",
-        title2="Calculated Spectrum",
+        {
+            "spectrum1": t8_spectrum,
+            "freqs1": t8_freqs,
+            "spectrum2": filtered_spectrum,
+            "freqs2": filtered_freqs,
+            "fmin": fmin,
+            "fmax": fmax,
+            "title1": "T8 Spectrum",
+            "title2": "Calculated Spectrum",
+            "xlabel": "Frequency (Hz)",
+            "ylabel": "Magnitude",
+        }
     )
 
 

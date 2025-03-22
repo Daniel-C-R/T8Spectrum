@@ -6,7 +6,7 @@ import pytest
 from t8_client import get_data
 
 
-def test_get_wave_list_success():
+def test_get_wave_list_success() -> None:
     """
     Test the successful retrieval of wave list.
 
@@ -67,7 +67,7 @@ def test_get_wave_list_success():
         ]
 
 
-def test_get_wave_list_failure():
+def test_get_wave_list_failure() -> None:
     """
     Test case for get_wave_list function when the request fails.
 
@@ -106,7 +106,7 @@ def test_get_wave_list_failure():
         assert "Failed to get waveform: Not Found" in str(excinfo.value)
 
 
-def test_get_wave_success():
+def test_get_wave_success() -> None:
     """
     Test the `get_wave` function from the `get_data` module for successful data
     retrieval.
@@ -130,10 +130,12 @@ def test_get_wave_success():
     - The decoded and scaled data is correctly processed.
     - The sample rate is correctly returned.
     """
+    expected_sample_rate = 2560
+
     mock_response = {
         "data": "eJxjZPj//389QwMAEP4D/g==",
         "factor": 2.0,
-        "sample_rate": 2560,
+        "sample_rate": expected_sample_rate,
     }
 
     kwargs = {
@@ -155,10 +157,10 @@ def test_get_wave_success():
         assert np.array_equal(
             result[0], 2 * np.array([1.0000e00, -1.0000e00, 3.2767e04, -3.2768e04])
         )
-        assert result[1] == 2560
+        assert result[1] == expected_sample_rate
 
 
-def test_get_wave_failure():
+def test_get_wave_failure() -> None:
     """
     Test case for the `get_wave` function to handle failure scenarios.
 
@@ -197,7 +199,7 @@ def test_get_wave_failure():
         assert "Failed to get waveform: Not Found" in str(excinfo.value)
 
 
-def test_get_spectra_success():
+def test_get_spectra_success() -> None:
     """
     Test the successful retrieval of spectra data.
 
@@ -258,7 +260,7 @@ def test_get_spectra_success():
         ]
 
 
-def test_get_spectra_failure():
+def test_get_spectra_failure() -> None:
     """
     Test case for the `get_spectra` function to handle failure scenarios.
 
@@ -300,7 +302,7 @@ def test_get_spectra_failure():
         assert "Failed to get spectra list: Not Found" in str(excinfo.value)
 
 
-def test_get_spectrum_success():
+def test_get_spectrum_success() -> None:
     """
     Test the `get_spectrum` function for successful data retrieval.
 
@@ -329,11 +331,14 @@ def test_get_spectrum_success():
         - The minimum frequency matches the expected value.
         - The maximum frequency matches the expected value.
     """
+    expected_fmin = 5
+    expected_fmax = 20
+
     mock_response = {
         "data": "eJxjZPj//389QwMAEP4D/g==",
         "factor": 2.0,
-        "min_freq": 5,
-        "max_freq": 20,
+        "min_freq": expected_fmin,
+        "max_freq": expected_fmax,
     }
 
     kwargs = {
@@ -355,11 +360,11 @@ def test_get_spectrum_success():
         assert np.array_equal(
             result[0], 2 * np.array([1.0000e00, -1.0000e00, 3.2767e04, -3.2768e04])
         )
-        assert result[1] == 5
-        assert result[2] == 20
+        assert result[1] == expected_fmin
+        assert result[2] == expected_fmax
 
 
-def test_get_spectrum_failure():
+def test_get_spectrum_failure() -> None:
     """
     Test case for the `get_spectrum` function to handle failure scenarios.
 

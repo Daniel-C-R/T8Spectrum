@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def zero_padding(waveform: np.ndarray):
+def zero_padding(waveform: np.ndarray) -> np.ndarray:
     """
     Pads the input waveform with zeros to the next power of 2 length.
 
@@ -16,7 +16,7 @@ def zero_padding(waveform: np.ndarray):
     return np.pad(waveform, (0, padded_length - n), "constant")
 
 
-def preprocess_waveform(waveform: np.ndarray):
+def preprocess_waveform(waveform: np.ndarray) -> np.ndarray:
     """
     Preprocesses the given waveform by applying a Hanning window and zero padding.
 

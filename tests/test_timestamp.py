@@ -1,7 +1,7 @@
 from t8_client.util.timestamp import iso_string_to_timestamp, timestamp_to_iso_string
 
 
-def test_timestamp_to_iso_string():
+def test_timestamp_to_iso_string() -> None:
     """
     Test the `timestamp_to_iso_string` function.
 
@@ -21,7 +21,7 @@ def test_timestamp_to_iso_string():
     assert timestamp_to_iso_string(timestamp) == time
 
 
-def test_iso_string_to_timestamp():
+def test_iso_string_to_timestamp() -> None:
     """
     Test the `iso_string_to_timestamp` function.
 

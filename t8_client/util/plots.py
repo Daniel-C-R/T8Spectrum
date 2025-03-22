@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-def plot_waveform(waveform, sample_rate):
+def plot_waveform(waveform: np.ndarray, sample_rate: float) -> None:
     """
     Plots a waveform.
 
@@ -17,7 +17,9 @@ def plot_waveform(waveform, sample_rate):
     plt.show()
 
 
-def plot_spectrum(spectrum, freqs, fmin, fmax):
+def plot_spectrum(
+    spectrum: np.ndarray, freqs: np.ndarray, fmin: float, fmax: float
+) -> None:
     """
     Plots a spectrum.
 
@@ -33,33 +35,34 @@ def plot_spectrum(spectrum, freqs, fmin, fmax):
     plt.show()
 
 
-def plot_spectrum_comparison(
-    spectrum1: np.ndarray,
-    freqs1: np.ndarray,
-    spectrum2: np.ndarray,
-    freqs2: np.ndarray,
-    fmin: float,
-    fmax: float,
-    title1: str = "Spectrum 1",
-    title2: str = "Spectrum 2",
-    xlabel: str = "Frequency (Hz)",
-    ylabel: str = "Amplitude",
-):
+def plot_spectrum_comparison(params: dict) -> None:
     """
     Plots a comparison of two spectra.
 
     Args:
-        spectrum1 (np.ndarray): The first spectrum to plot.
-        freqs1 (np.ndarray): The frequencies corresponding to the first spectrum.
-        spectrum2 (np.ndarray): The second spectrum to plot.
-        freqs2 (np.ndarray): The frequencies corresponding to the second spectrum.
-        fmin (float): The minimum frequency to plot.
-        fmax (float): The maximum frequency to plot.
-        title1 (str): The title of the first spectrum plot.
-        title2 (str): The title of the second spectrum plot.
-        xlabel (str): The label for the x-axis.
-        ylabel (str): The label for the y-axis.
+        params (dict): A dictionary containing the following keys:
+            - spectrum1 (np.ndarray): The first spectrum to plot.
+            - freqs1 (np.ndarray): The frequencies corresponding to the first spectrum.
+            - spectrum2 (np.ndarray): The second spectrum to plot.
+            - freqs2 (np.ndarray): The frequencies corresponding to the second spectrum.
+            - fmin (float): The minimum frequency to plot.
+            - fmax (float): The maximum frequency to plot.
+            - title1 (str): The title of the first spectrum plot.
+            - title2 (str): The title of the second spectrum plot.
+            - xlabel (str): The label for the x-axis.
+            - ylabel (str): The label for the y-axis.
     """
+    spectrum1 = params["spectrum1"]
+    freqs1 = params["freqs1"]
+    spectrum2 = params["spectrum2"]
+    freqs2 = params["freqs2"]
+    fmin = params["fmin"]
+    fmax = params["fmax"]
+    title1 = params.get("title1", "Spectrum 1")
+    title2 = params.get("title2", "Spectrum 2")
+    xlabel = params.get("xlabel", "Frequency (Hz)")
+    ylabel = params.get("ylabel", "Amplitude")
+
     _, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))
 
     ax1.plot(freqs1, spectrum1)

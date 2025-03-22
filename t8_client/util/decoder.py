@@ -5,7 +5,7 @@ from zlib import decompress
 import numpy as np
 
 
-def zint_to_float(raw):
+def zint_to_float(raw: str) -> np.ndarray:
     """
     Convert a base64 encoded compressed string of 16-bit integers to a NumPy array of
         floats.

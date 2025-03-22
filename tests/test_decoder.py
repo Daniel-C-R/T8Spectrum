@@ -7,7 +7,7 @@ import pytest
 from t8_client.util.decoder import zint_to_float
 
 
-def test_zint_to_float():
+def test_zint_to_float() -> None:
     """
     Test the `zint_to_float` function.
     This test performs the following steps:
@@ -40,7 +40,7 @@ def test_zint_to_float():
     np.testing.assert_array_equal(result, expected_result)
 
 
-def test_zint_to_float_empty_string():
+def test_zint_to_float_empty_string() -> None:
     """
     Test the `zint_to_float` function with an empty string input.
 
@@ -56,7 +56,7 @@ def test_zint_to_float_empty_string():
     np.testing.assert_array_equal(result, expected_result)
 
 
-def test_zint_to_float_invalid_data():
+def test_zint_to_float_invalid_data() -> None:
     """
     Test the zint_to_float function with invalid data.
 
