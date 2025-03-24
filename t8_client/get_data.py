@@ -8,8 +8,6 @@ import requests
 from t8_client.util.decoder import zint_to_float
 from t8_client.util.timestamp import iso_string_to_timestamp, timestamp_to_iso_string
 
-HTTP_STATUS_OK = 200
-
 
 def get_wave_list(**kwargs: dict) -> Generator[str]:
     """Retrieve a list of wave timestamps from a specified host and endpoint.
@@ -41,7 +39,7 @@ def get_wave_list(**kwargs: dict) -> Generator[str]:
 
     url = f"https://{host}/{id_}/rest/waves/{machine}/{point}/{pmode}"
     response = requests.get(url, auth=(t8_user, t8_password), timeout=10)
-    if response.status_code != HTTP_STATUS_OK:
+    if response.status_code != requests.codes.ALL_OK:
         error_message = f"Failed to get waveform: {response.text}"
         raise requests.HTTPError(error_message)
     response = response.json()
@@ -77,7 +75,7 @@ def get_wave(**kwargs: dict) -> tuple[np.ndarray, int]:
 
     url = f"https://{host}/{id_}/rest/waves/{machine}/{point}/{pmode}/{time}"
     response = requests.get(url, auth=(t8_user, t8_password), timeout=10)
-    if response.status_code != HTTP_STATUS_OK:
+    if response.status_code != requests.codes.ALL_OK:
         error_message = f"Failed to get waveform: {response.text}"
         raise requests.HTTPError(error_message)
     response = response.json()
@@ -112,7 +110,7 @@ def get_spectra(**kwargs: dict) -> Generator[str]:
 
     url = f"https://{host}/{id_}/rest/spectra/{machine}/{point}/{pmode}"
     response = requests.get(url, auth=(t8_user, t8_password), timeout=10)
-    if response.status_code != HTTP_STATUS_OK:
+    if response.status_code != requests.codes.ALL_OK:
         error_message = f"Failed to get spectra list: {response.text}"
         raise requests.HTTPError(error_message)
     response = response.json()
@@ -147,7 +145,7 @@ def get_spectrum(**kwargs: dict) -> tuple[np.ndarray]:
 
     url = f"https://{host}/{id_}/rest/spectra/{machine}/{point}/{pmode}/{time}"
     response = requests.get(url, auth=(t8_user, t8_password), timeout=10)
-    if response.status_code != HTTP_STATUS_OK:
+    if response.status_code != requests.codes.ALL_OK:
         error_message = f"Failed to get spectra: {response.text}"
         raise requests.HTTPError(error_message)
     response = response.json()
