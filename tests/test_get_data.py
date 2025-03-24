@@ -1,4 +1,5 @@
 """Unit tests for the get_data module."""
+
 from unittest.mock import patch
 
 import numpy as np
