@@ -1,3 +1,5 @@
+"""Tests for the decoder module."""
+
 from base64 import b64encode
 from zlib import compress
 
@@ -8,8 +10,8 @@ from t8_client.util.decoder import zint_to_float
 
 
 def test_zint_to_float() -> None:
-    """
-    Test the `zint_to_float` function.
+    """Test the `zint_to_float` function.
+
     This test performs the following steps:
     1. Creates a sample array of 16-bit integers.
     2. Converts the sample data to bytes.
@@ -41,8 +43,7 @@ def test_zint_to_float() -> None:
 
 
 def test_zint_to_float_empty_string() -> None:
-    """
-    Test the `zint_to_float` function with an empty string input.
+    """Test the `zint_to_float` function with an empty string input.
 
     This test verifies that the `zint_to_float` function correctly handles an empty
     string by returning an empty NumPy array of type float32.
@@ -57,13 +58,12 @@ def test_zint_to_float_empty_string() -> None:
 
 
 def test_zint_to_float_invalid_data() -> None:
-    """
-    Test the zint_to_float function with invalid data.
+    """Test the zint_to_float function with invalid data.
 
     This test ensures that the zint_to_float function raises an exception
     when provided with an invalid base64 string. The function is expected
     to handle such cases gracefully by raising an appropriate exception.
     """
     # Test with invalid data
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Invalid base64-encoded string"):
         zint_to_float("invalid_base64")

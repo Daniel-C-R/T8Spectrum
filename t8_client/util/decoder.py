@@ -1,3 +1,5 @@
+"""Module for decoding compressed data from the T8 API."""
+
 from base64 import b64decode
 from struct import unpack
 from zlib import decompress
@@ -5,10 +7,11 @@ from zlib import decompress
 import numpy as np
 
 
-def zint_to_float(raw: str) -> np.ndarray:
-    """
+def zint_to_float(raw: str) -> np.ndarray[float]:
+    """Convert a base64 encoded compressed string of 16-bit integers to array.
+
     Convert a base64 encoded compressed string of 16-bit integers to a NumPy array of
-        floats.
+    floats.
 
     Args:
         raw (str): A base64 encoded string containing compressed 16-bit integer data.
@@ -16,6 +19,7 @@ def zint_to_float(raw: str) -> np.ndarray:
     Returns:
         np.ndarray: A NumPy array of floats obtained by decompressing and decoding the
             input string.
+
     """
     if not raw:
         return np.array([], dtype="f")

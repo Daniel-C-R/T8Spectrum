@@ -1,14 +1,16 @@
+"""Provides functions for plotting waveforms and spectra."""
+
 import numpy as np
 from matplotlib import pyplot as plt
 
 
 def plot_waveform(waveform: np.ndarray, sample_rate: float) -> None:
-    """
-    Plots a waveform.
+    """Plot a waveform.
 
     Args:
         waveform (np.ndarray): The waveform to plot.
         sample_rate (int): The sample rate of the waveform.
+
     """
     instants = np.linspace(0, len(waveform) / sample_rate, len(waveform))
 
@@ -20,14 +22,14 @@ def plot_waveform(waveform: np.ndarray, sample_rate: float) -> None:
 def plot_spectrum(
     spectrum: np.ndarray, freqs: np.ndarray, fmin: float, fmax: float
 ) -> None:
-    """
-    Plots a spectrum.
+    """Plot a spectrum.
 
     Args:
         spectrum (np.ndarray): The spectrum to plot.
         freqs (np.ndarray): The frequencies corresponding to the spectrum.
         fmin (float): The minimum frequency to plot.
         fmax (float): The maximum frequency to plot.
+
     """
     plt.plot(freqs, spectrum)
     plt.xlim(fmin, fmax)
@@ -36,8 +38,7 @@ def plot_spectrum(
 
 
 def plot_spectrum_comparison(params: dict) -> None:
-    """
-    Plots a comparison of two spectra.
+    """Plot a comparison of two spectra.
 
     Args:
         params (dict): A dictionary containing the following keys:
@@ -51,6 +52,7 @@ def plot_spectrum_comparison(params: dict) -> None:
             - title2 (str): The title of the second spectrum plot.
             - xlabel (str): The label for the x-axis.
             - ylabel (str): The label for the y-axis.
+
     """
     spectrum1 = params["spectrum1"]
     freqs1 = params["freqs1"]

@@ -1,3 +1,10 @@
+"""Script for calculating the spectrum of a waveform.
+
+This script fetches a waveform from the T8 API and calculates its frequency spectrum
+within a specified frequency range. The calculated spectrum is then compared to the
+spectrum provided by the T8 API.
+"""
+
 import numpy as np
 
 from t8_client import get_data
@@ -13,7 +20,7 @@ PMODE = "AM1"
 TIME = "2019-04-11T18:25:54"
 
 
-def main() -> None:
+def main() -> None:  # noqa: D103
     t8_user = input("Enter T8 username: ")
     t8_password = input("Enter T8 password: ")
 

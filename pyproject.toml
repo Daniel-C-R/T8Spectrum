@@ -43,13 +43,19 @@ lint.select = [
     "UP",  # pyupgradej
     "W",   # pycodestyle
     "ANN", # flake8-annotations - Consistent type annotations
-    # "D", # pydocstyle
-    # "EM", # flake8-errmsg
-    # "ERA", # flake8-eradicate - remove commented out code
-    # "PT",  # flake8-pytest-style
-    # "S", # flake8-bandit - security checks
-    # "SLF", # flake8-self - private member access
+    "D",   # pydocstyle
+    "EM",  # flake8-errmsg
+    "ERA", # flake8-eradicate - remove commented out code
+    "PT",  # flake8-pytest-style
+    "S",   # flake8-bandit - security checks
+    "SLF", # flake8-self - private member access
 ]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"] # Disable assert statement prohibition in tests
 
 [tool.poetry.scripts]
 t8-client = "t8_client.cli:cli"

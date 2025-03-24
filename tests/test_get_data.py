@@ -1,14 +1,15 @@
+"""Unit tests for the get_data module."""
 from unittest.mock import patch
 
 import numpy as np
 import pytest
+import requests
 
 from t8_client import get_data
 
 
 def test_get_wave_list_success() -> None:
-    """
-    Test the successful retrieval of wave list.
+    """Test the successful retrieval of wave list.
 
     This test mocks the response from the `requests.get` call to simulate
     retrieving a list of wave links. It then verifies that the `get_wave_list`
@@ -68,8 +69,7 @@ def test_get_wave_list_success() -> None:
 
 
 def test_get_wave_list_failure() -> None:
-    """
-    Test case for get_wave_list function when the request fails.
+    """Test case for get_wave_list function when the request fails.
 
     This test simulates a failure scenario where the HTTP GET request to fetch the wave
     list returns a 404 status code with a "Not Found" message. It verifies that the
@@ -101,13 +101,14 @@ def test_get_wave_list_failure() -> None:
         mock_get.return_value.status_code = 404
         mock_get.return_value.text = "Not Found"
 
-        with pytest.raises(Exception) as excinfo:
+        with pytest.raises(requests.HTTPError) as excinfo:
             list(get_data.get_wave_list(**kwargs))
         assert "Failed to get waveform: Not Found" in str(excinfo.value)
 
 
 def test_get_wave_success() -> None:
-    """
+    """Test the `get_wave` function for successful data retrieval.
+
     Test the `get_wave` function from the `get_data` module for successful data
     retrieval.
 
@@ -129,6 +130,7 @@ def test_get_wave_success() -> None:
     Assertions:
     - The decoded and scaled data is correctly processed.
     - The sample rate is correctly returned.
+
     """
     expected_sample_rate = 2560
 
@@ -161,8 +163,7 @@ def test_get_wave_success() -> None:
 
 
 def test_get_wave_failure() -> None:
-    """
-    Test case for the `get_wave` function to handle failure scenarios.
+    """Test case for the `get_wave` function to handle failure scenarios.
 
     This test verifies that the `get_wave` function raises an exception when the
     HTTP request to retrieve waveform data fails with a 404 status code.
@@ -194,14 +195,13 @@ def test_get_wave_failure() -> None:
         mock_get.return_value.status_code = 404
         mock_get.return_value.text = "Not Found"
 
-        with pytest.raises(Exception) as excinfo:
+        with pytest.raises(requests.HTTPError) as excinfo:
             get_data.get_wave(**kwargs)
         assert "Failed to get waveform: Not Found" in str(excinfo.value)
 
 
 def test_get_spectra_success() -> None:
-    """
-    Test the successful retrieval of spectra data.
+    """Test the successful retrieval of spectra data.
 
     This test mocks the response from an API call to retrieve spectra data and verifies
     that the `get_spectra` function processes the response correctly.
@@ -261,8 +261,7 @@ def test_get_spectra_success() -> None:
 
 
 def test_get_spectra_failure() -> None:
-    """
-    Test case for the `get_spectra` function to handle failure scenarios.
+    """Test case for the `get_spectra` function to handle failure scenarios.
 
     This test simulates a failure response from the `requests.get` call by mocking it to
     return a 404 status code with a "Not Found" message. It then verifies that the
@@ -297,14 +296,13 @@ def test_get_spectra_failure() -> None:
         mock_get.return_value.status_code = 404
         mock_get.return_value.text = "Not Found"
 
-        with pytest.raises(Exception) as excinfo:
+        with pytest.raises(requests.HTTPError) as excinfo:
             list(get_data.get_spectra(**kwargs))
         assert "Failed to get spectra list: Not Found" in str(excinfo.value)
 
 
 def test_get_spectrum_success() -> None:
-    """
-    Test the `get_spectrum` function for successful data retrieval.
+    """Test the `get_spectrum` function for successful data retrieval.
 
     This test mocks the `requests.get` method to simulate a successful API response
     with predefined spectrum data. It verifies that the `get_spectrum` function
@@ -365,8 +363,7 @@ def test_get_spectrum_success() -> None:
 
 
 def test_get_spectrum_failure() -> None:
-    """
-    Test case for the `get_spectrum` function to handle failure scenarios.
+    """Test case for the `get_spectrum` function to handle failure scenarios.
 
     This test verifies that the `get_spectrum` function raises an exception
     when the HTTP request to retrieve spectrum data fails with a 404 status code.
@@ -395,6 +392,6 @@ def test_get_spectrum_failure() -> None:
         mock_get.return_value.status_code = 404
         mock_get.return_value.text = "Not Found"
 
-        with pytest.raises(Exception) as excinfo:
+        with pytest.raises(requests.HTTPError) as excinfo:
             get_data.get_spectrum(**kwargs)
         assert "Failed to get spectra: Not Found" in str(excinfo.value)

@@ -1,6 +1,10 @@
+"""Command line interface for the T8 client."""
+
 # ruff: noqa: ANN001
 # ruff: noqa: ANN201
 # ruff: noqa: ARG001
+# ruff: noqa: D103
+
 import os
 
 import click

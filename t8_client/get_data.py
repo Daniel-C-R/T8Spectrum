@@ -1,3 +1,5 @@
+"""Module for fetching data from the T8 REST API."""
+
 from collections.abc import Generator
 
 import numpy as np
@@ -10,8 +12,7 @@ HTTP_STATUS_OK = 200
 
 
 def get_wave_list(**kwargs: dict) -> Generator[str]:
-    """
-    Retrieves a list of wave timestamps from a specified host and endpoint.
+    """Retrieve a list of wave timestamps from a specified host and endpoint.
 
     Args:
         **kwargs: Arbitrary keyword arguments.
@@ -28,6 +29,7 @@ def get_wave_list(**kwargs: dict) -> Generator[str]:
 
     Raises:
         Exception: If the request to the server fails.
+
     """
     host = kwargs["host"]
     id_ = kwargs["id"]
@@ -38,9 +40,10 @@ def get_wave_list(**kwargs: dict) -> Generator[str]:
     t8_password = kwargs["t8_password"]
 
     url = f"https://{host}/{id_}/rest/waves/{machine}/{point}/{pmode}"
-    response = requests.get(url, auth=(t8_user, t8_password))
+    response = requests.get(url, auth=(t8_user, t8_password), timeout=10)
     if response.status_code != HTTP_STATUS_OK:
-        raise Exception(f"Failed to get waveform: {response.text}")
+        error_message = f"Failed to get waveform: {response.text}"
+        raise requests.HTTPError(error_message)
     response = response.json()
 
     for item in response["_items"]:
@@ -50,8 +53,7 @@ def get_wave_list(**kwargs: dict) -> Generator[str]:
 
 
 def get_wave(**kwargs: dict) -> tuple[np.ndarray, int]:
-    """
-    Fetches waveform data from a specified host.
+    """Fetch waveform data from a specified host.
 
     Args:
         kwargs: The URL parameters as keyword arguments.
@@ -62,6 +64,7 @@ def get_wave(**kwargs: dict) -> tuple[np.ndarray, int]:
 
     Raises:
         Exception: If the request to fetch the waveform data fails.
+
     """
     host = kwargs["host"]
     id_ = kwargs["id"]
@@ -73,9 +76,10 @@ def get_wave(**kwargs: dict) -> tuple[np.ndarray, int]:
     t8_password = kwargs["t8_password"]
 
     url = f"https://{host}/{id_}/rest/waves/{machine}/{point}/{pmode}/{time}"
-    response = requests.get(url, auth=(t8_user, t8_password))
+    response = requests.get(url, auth=(t8_user, t8_password), timeout=10)
     if response.status_code != HTTP_STATUS_OK:
-        raise Exception(f"Failed to get waveform: {response.text}")
+        error_message = f"Failed to get waveform: {response.text}"
+        raise requests.HTTPError(error_message)
     response = response.json()
 
     waveform = zint_to_float(response["data"])
@@ -86,23 +90,17 @@ def get_wave(**kwargs: dict) -> tuple[np.ndarray, int]:
 
 
 def get_spectra(**kwargs: dict) -> Generator[str]:
-    """
-    Fetches spectra data from a specified host and yields timestamps in ISO format.
+    """Fetch spectra data from a specified host and yields timestamps in ISO format.
 
     Args:
-        host (str): The host URL.
-        id_ (str): The ID for the spectra request.
-        machine (str): The machine identifier.
-        point (str): The point identifier.
-        pmode (str): The mode of the spectra.
-        t8_user (str): The username for authentication.
-        t8_password (str): The password for authentication.
+        kwargs: The URL parameters as keyword arguments.
 
     Yields:
         str: Timestamps in ISO format.
 
     Raises:
         Exception: If the request to get spectra list fails.
+
     """
     host = kwargs["host"]
     id_ = kwargs["id"]
@@ -113,9 +111,10 @@ def get_spectra(**kwargs: dict) -> Generator[str]:
     t8_password = kwargs["t8_password"]
 
     url = f"https://{host}/{id_}/rest/spectra/{machine}/{point}/{pmode}"
-    response = requests.get(url, auth=(t8_user, t8_password))
+    response = requests.get(url, auth=(t8_user, t8_password), timeout=10)
     if response.status_code != HTTP_STATUS_OK:
-        raise Exception(f"Failed to get spectra list: {response.text}")
+        error_message = f"Failed to get spectra list: {response.text}"
+        raise requests.HTTPError(error_message)
     response = response.json()
 
     for item in response["_items"]:
@@ -125,8 +124,7 @@ def get_spectra(**kwargs: dict) -> Generator[str]:
 
 
 def get_spectrum(**kwargs: dict) -> tuple[np.ndarray]:
-    """
-    Fetches spectrum data from a specified host and endpoint.
+    """Fetch spectrum data from a specified host and endpoint.
 
     Args:
         kwargs: The URL parameters as keyword arguments.
@@ -136,6 +134,7 @@ def get_spectrum(**kwargs: dict) -> tuple[np.ndarray]:
 
     Raises:
         Exception: If the request to the server fails.
+
     """
     host = kwargs["host"]
     id_ = kwargs["id"]
@@ -147,9 +146,10 @@ def get_spectrum(**kwargs: dict) -> tuple[np.ndarray]:
     t8_password = kwargs["t8_password"]
 
     url = f"https://{host}/{id_}/rest/spectra/{machine}/{point}/{pmode}/{time}"
-    response = requests.get(url, auth=(t8_user, t8_password))
+    response = requests.get(url, auth=(t8_user, t8_password), timeout=10)
     if response.status_code != HTTP_STATUS_OK:
-        raise Exception(f"Failed to get spectra: {response.text}")
+        error_message = f"Failed to get spectra: {response.text}"
+        raise requests.HTTPError(error_message)
     response = response.json()
 
     spectrum = zint_to_float(response["data"])

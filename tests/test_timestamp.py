@@ -1,9 +1,9 @@
+"""Tests for the timestamp utility functions."""
 from t8_client.util.timestamp import iso_string_to_timestamp, timestamp_to_iso_string
 
 
 def test_timestamp_to_iso_string() -> None:
-    """
-    Test the `timestamp_to_iso_string` function.
+    """Test the `timestamp_to_iso_string` function.
 
     This test checks if the `timestamp_to_iso_string` function correctly converts
     a given Unix timestamp to an ISO 8601 formatted string.
@@ -22,8 +22,7 @@ def test_timestamp_to_iso_string() -> None:
 
 
 def test_iso_string_to_timestamp() -> None:
-    """
-    Test the `iso_string_to_timestamp` function.
+    """Test the `iso_string_to_timestamp` function.
 
     This test checks if the `iso_string_to_timestamp` function correctly converts
     a given ISO 8601 formatted string to a Unix timestamp.
