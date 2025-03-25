@@ -58,6 +58,9 @@ convention = "google"
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101"] # Disable assert statement prohibition in tests
 
+[tool.ruff.lint.flake8-pytest-style]
+fixture-parentheses = false
+
 [tool.poetry.scripts]
 t8-client = "t8_client.cli:cli"
 spectra-comparison = "scripts.spectra_comparison:main"

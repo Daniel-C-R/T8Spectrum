@@ -11,7 +11,7 @@ import requests
 from t8_client import get_data, url_params
 
 
-@pytest.fixture()
+@pytest.fixture
 def pmode_params() -> url_params.PmodeParams:
     """Return a PmodeParams object with dummy values."""
     return url_params.PmodeParams(
@@ -25,7 +25,7 @@ def pmode_params() -> url_params.PmodeParams:
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def pmode_time_params() -> url_params.PmodeTimeParams:
     """Return a PmodeTimeParams object with dummy values."""
     return url_params.PmodeTimeParams(
