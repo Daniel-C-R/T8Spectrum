@@ -5,22 +5,16 @@ from collections.abc import Generator
 import numpy as np
 import requests
 
+from t8_client import url_params
 from t8_client.util.decoder import zint_to_float
-from t8_client.util.timestamp import iso_string_to_timestamp, timestamp_to_iso_string
+from t8_client.util.timestamp import timestamp_to_iso_string
 
 
-def get_wave_list(**kwargs: dict) -> Generator[str]:
+def get_wave_list(params: url_params.PmodeParams) -> Generator[str]:
     """Retrieve a list of wave timestamps from a specified host and endpoint.
 
     Args:
-        **kwargs: Arbitrary keyword arguments.
-            host (str): The host URL.
-            id_ (str): The ID for the endpoint.
-            machine (str): The machine identifier.
-            point (str): The point identifier.
-            pmode (str): The mode parameter.
-            t8_user (str): The username for authentication.
-            t8_password (str): The password for authentication.
+        params (url_params.PmodeParams): The URL parameters as a `PmodeParams` object
 
     Yields:
         str: ISO formatted timestamp string for each valid wave item.
@@ -29,13 +23,13 @@ def get_wave_list(**kwargs: dict) -> Generator[str]:
         Exception: If the request to the server fails.
 
     """
-    host = kwargs["host"]
-    id_ = kwargs["id"]
-    machine = kwargs["machine"]
-    point = kwargs["point"]
-    pmode = kwargs["pmode"]
-    t8_user = kwargs["t8_user"]
-    t8_password = kwargs["t8_password"]
+    host = params.host
+    id_ = params.id_
+    machine = params.machine
+    point = params.point
+    pmode = params.pmode
+    t8_user = params.user
+    t8_password = params.password
 
     url = f"https://{host}/{id_}/rest/waves/{machine}/{point}/{pmode}"
     response = requests.get(url, auth=(t8_user, t8_password), timeout=10)
@@ -50,11 +44,12 @@ def get_wave_list(**kwargs: dict) -> Generator[str]:
             yield timestamp_to_iso_string(timestamp)
 
 
-def get_wave(**kwargs: dict) -> tuple[np.ndarray, int]:
+def get_wave(params: url_params.PmodeTimeParams) -> tuple[np.ndarray, int]:
     """Fetch waveform data from a specified host.
 
     Args:
-        kwargs: The URL parameters as keyword arguments.
+        params (url_params.PmodeTimeParams): The URL parameters as a `PmodeTimeParams`
+            object.
 
     Returns:
         tuple[np.ndarray, int]: A tuple containing the waveform data as a numpy array
@@ -64,16 +59,16 @@ def get_wave(**kwargs: dict) -> tuple[np.ndarray, int]:
         Exception: If the request to fetch the waveform data fails.
 
     """
-    host = kwargs["host"]
-    id_ = kwargs["id"]
-    machine = kwargs["machine"]
-    point = kwargs["point"]
-    pmode = kwargs["pmode"]
-    time = iso_string_to_timestamp(kwargs["time"])
-    t8_user = kwargs["t8_user"]
-    t8_password = kwargs["t8_password"]
+    host = params.host
+    id_ = params.id_
+    machine = params.machine
+    point = params.point
+    pmode = params.pmode
+    t8_user = params.user
+    t8_password = params.password
+    timestamp = params.time
 
-    url = f"https://{host}/{id_}/rest/waves/{machine}/{point}/{pmode}/{time}"
+    url = f"https://{host}/{id_}/rest/waves/{machine}/{point}/{pmode}/{timestamp}"
     response = requests.get(url, auth=(t8_user, t8_password), timeout=10)
     if response.status_code != requests.codes.ALL_OK:
         error_message = f"Failed to get waveform: {response.text}"
@@ -87,11 +82,11 @@ def get_wave(**kwargs: dict) -> tuple[np.ndarray, int]:
     return waveform * factor, sample_rate
 
 
-def get_spectra(**kwargs: dict) -> Generator[str]:
+def get_spectra(params: url_params.PmodeParams) -> Generator[str]:
     """Fetch spectra data from a specified host and yields timestamps in ISO format.
 
     Args:
-        kwargs: The URL parameters as keyword arguments.
+        params (url_params.PmodeParams): The URL parameters as a `PmodeParams` object.
 
     Yields:
         str: Timestamps in ISO format.
@@ -100,13 +95,13 @@ def get_spectra(**kwargs: dict) -> Generator[str]:
         Exception: If the request to get spectra list fails.
 
     """
-    host = kwargs["host"]
-    id_ = kwargs["id"]
-    machine = kwargs["machine"]
-    point = kwargs["point"]
-    pmode = kwargs["pmode"]
-    t8_user = kwargs["t8_user"]
-    t8_password = kwargs["t8_password"]
+    host = params.host
+    id_ = params.id_
+    machine = params.machine
+    point = params.point
+    pmode = params.pmode
+    t8_user = params.user
+    t8_password = params.password
 
     url = f"https://{host}/{id_}/rest/spectra/{machine}/{point}/{pmode}"
     response = requests.get(url, auth=(t8_user, t8_password), timeout=10)
@@ -121,29 +116,31 @@ def get_spectra(**kwargs: dict) -> Generator[str]:
             yield timestamp_to_iso_string(timestamp)
 
 
-def get_spectrum(**kwargs: dict) -> tuple[np.ndarray]:
+def get_spectrum(params: url_params.PmodeTimeParams) -> tuple[np.ndarray]:
     """Fetch spectrum data from a specified host and endpoint.
 
     Args:
-        kwargs: The URL parameters as keyword arguments.
+        params (url_params.PmodeTimeParams): The URL parameters as a `PmodeTimeParams`
+            object.
 
     Returns:
-        tuple[np.ndarray]: A tuple containing the spectral data as numpy arrays.
+        tuple[np.ndarray, int, int]: A tuple containing the spectral data as numpy
+        arrays, the minimum frequency, and the maximum frequency.
 
     Raises:
         Exception: If the request to the server fails.
 
     """
-    host = kwargs["host"]
-    id_ = kwargs["id"]
-    machine = kwargs["machine"]
-    point = kwargs["point"]
-    pmode = kwargs["pmode"]
-    time = iso_string_to_timestamp(kwargs["time"])
-    t8_user = kwargs["t8_user"]
-    t8_password = kwargs["t8_password"]
+    host = params.host
+    id_ = params.id_
+    machine = params.machine
+    point = params.point
+    pmode = params.pmode
+    t8_user = params.user
+    t8_password = params.password
+    timestamp = params.time
 
-    url = f"https://{host}/{id_}/rest/spectra/{machine}/{point}/{pmode}/{time}"
+    url = f"https://{host}/{id_}/rest/spectra/{machine}/{point}/{pmode}/{timestamp}"
     response = requests.get(url, auth=(t8_user, t8_password), timeout=10)
     if response.status_code != requests.codes.ALL_OK:
         error_message = f"Failed to get spectra: {response.text}"

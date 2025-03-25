@@ -1,12 +1,14 @@
 """Unit tests for the get_data module."""
 
+# ruff: noqa: S106
+
 from unittest.mock import patch
 
 import numpy as np
 import pytest
 import requests
 
-from t8_client import get_data
+from t8_client import get_data, url_params
 
 
 def test_get_wave_list_success() -> None:
@@ -47,21 +49,21 @@ def test_get_wave_list_success() -> None:
         ],
     }
 
-    kwargs = {
-        "host": "example.com",
-        "id": "test_id",
-        "machine": "test_machine",
-        "point": "test_point",
-        "pmode": "test_pmode",
-        "t8_user": "user",
-        "t8_password": "password",
-    }
+    params = url_params.PmodeParams(
+        host="example.com",
+        id_="test_id",
+        machine="test_machine",
+        point="test_point",
+        pmode="test_pmode",
+        user="user",
+        password="password",
+    )
 
     with patch("requests.get") as mock_get:
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = mock_response
 
-        result = list(get_data.get_wave_list(**kwargs))
+        result = list(get_data.get_wave_list(params))
         assert result == [
             "2019-04-10T14:48:44",
             "2019-04-10T14:49:24",
@@ -88,22 +90,22 @@ def test_get_wave_list_failure() -> None:
     message "Failed to get waveform: Not Found" when the HTTP GET request fails with a
     404 status code.
     """
-    kwargs = {
-        "host": "example.com",
-        "id": "test_id",
-        "machine": "M1",
-        "point": "P1",
-        "pmode": "PM1",
-        "t8_user": "user",
-        "t8_password": "password",
-    }
+    params = url_params.PmodeParams(
+        host="example.com",
+        id_="test_id",
+        machine="M1",
+        point="P1",
+        pmode="PM1",
+        user="user",
+        password="password",
+    )
 
     with patch("requests.get") as mock_get:
         mock_get.return_value.status_code = 404
         mock_get.return_value.text = "Not Found"
 
         with pytest.raises(requests.HTTPError) as excinfo:
-            list(get_data.get_wave_list(**kwargs))
+            list(get_data.get_wave_list(params))
         assert "Failed to get waveform: Not Found" in str(excinfo.value)
 
 
@@ -141,22 +143,22 @@ def test_get_wave_success() -> None:
         "sample_rate": expected_sample_rate,
     }
 
-    kwargs = {
-        "host": "example.com",
-        "id": "test_id",
-        "machine": "test_machine",
-        "point": "test_point",
-        "pmode": "test_pmode",
-        "time": "2019-04-10T14:48:44",
-        "t8_user": "user",
-        "t8_password": "password",
-    }
+    params = url_params.PmodeTimeParams(
+        host="example.com",
+        id_="test_id",
+        machine="test_machine",
+        point="test_point",
+        pmode="test_pmode",
+        time="2019-04-10T14:48:44",
+        user="user",
+        password="password",
+    )
 
     with patch("requests.get") as mock_get:
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = mock_response
 
-        result = get_data.get_wave(**kwargs)
+        result = get_data.get_wave(params)
         assert np.array_equal(
             result[0], 2 * np.array([1.0000e00, -1.0000e00, 3.2767e04, -3.2768e04])
         )
@@ -181,23 +183,23 @@ def test_get_wave_failure() -> None:
     message "Failed to get waveform: Not Found" when the HTTP request fails with
     a 404 status code.
     """
-    kwargs = {
-        "host": "example.com",
-        "id": "test_id",
-        "machine": "M1",
-        "point": "P1",
-        "pmode": "PM1",
-        "time": "2019-04-10T14:48:44",
-        "t8_user": "user",
-        "t8_password": "password",
-    }
+    params = url_params.PmodeTimeParams(
+        host="example.com",
+        id_="test_id",
+        machine="M1",
+        point="P1",
+        pmode="PM1",
+        time="2019-04-10T14:48:44",
+        user="user",
+        password="password",
+    )
 
     with patch("requests.get") as mock_get:
         mock_get.return_value.status_code = 404
         mock_get.return_value.text = "Not Found"
 
         with pytest.raises(requests.HTTPError) as excinfo:
-            get_data.get_wave(**kwargs)
+            get_data.get_wave(params)
         assert "Failed to get waveform: Not Found" in str(excinfo.value)
 
 
@@ -239,21 +241,21 @@ def test_get_spectra_success() -> None:
         ],
     }
 
-    kwargs = {
-        "host": "example.com",
-        "id": "test_id",
-        "machine": "test_machine",
-        "point": "test_point",
-        "pmode": "test_pmode",
-        "t8_user": "user",
-        "t8_password": "password",
-    }
+    params = url_params.PmodeParams(
+        host="example.com",
+        id_="test_id",
+        machine="test_machine",
+        point="test_point",
+        pmode="test_pmode",
+        user="user",
+        password="password",
+    )
 
     with patch("requests.get") as mock_get:
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = mock_response
 
-        result = list(get_data.get_spectra(**kwargs))
+        result = list(get_data.get_spectra(params))
         assert result == [
             "2019-04-10T14:48:44",
             "2019-04-10T14:49:24",
@@ -262,6 +264,27 @@ def test_get_spectra_success() -> None:
 
 
 def test_get_spectra_failure() -> None:
+    """Test case for the `get_spectra` function to handle failure scenarios."""
+    params = url_params.PmodeParams(
+        host="example.com",
+        id_="test_id",
+        machine="M1",
+        point="P1",
+        pmode="PM1",
+        user="user",
+        password="password",
+    )
+
+    with patch("requests.get") as mock_get:
+        mock_get.return_value.status_code = 404
+        mock_get.return_value.text = "Not Found"
+
+        with pytest.raises(requests.HTTPError) as excinfo:
+            list(get_data.get_spectra(params))
+        assert "Failed to get spectra list: Not Found" in str(excinfo.value)
+
+
+def test_get_spectrum_success() -> None:
     """Test case for the `get_spectra` function to handle failure scenarios.
 
     This test simulates a failure response from the `requests.get` call by mocking it to
@@ -283,53 +306,6 @@ def test_get_spectra_failure() -> None:
       get spectra list: Not Found" when the `requests.get` call returns a 404 status
       code.
     """
-    kwargs = {
-        "host": "example.com",
-        "id": "test_id",
-        "machine": "M1",
-        "point": "P1",
-        "pmode": "PM1",
-        "t8_user": "user",
-        "t8_password": "password",
-    }
-
-    with patch("requests.get") as mock_get:
-        mock_get.return_value.status_code = 404
-        mock_get.return_value.text = "Not Found"
-
-        with pytest.raises(requests.HTTPError) as excinfo:
-            list(get_data.get_spectra(**kwargs))
-        assert "Failed to get spectra list: Not Found" in str(excinfo.value)
-
-
-def test_get_spectrum_success() -> None:
-    """Test the `get_spectrum` function for successful data retrieval.
-
-    This test mocks the `requests.get` method to simulate a successful API response
-    with predefined spectrum data. It verifies that the `get_spectrum` function
-    correctly processes the response and returns the expected results.
-
-    Mock Response:
-        - data: Base64 encoded string representing the spectrum data.
-        - factor: Scaling factor for the spectrum data.
-        - min_freq: Minimum frequency of the spectrum.
-        - max_freq: Maximum frequency of the spectrum.
-
-    Test Parameters:
-        - host: The host of the API.
-        - id: The ID of the spectrum data.
-        - machine: The machine identifier.
-        - point: The point identifier.
-        - pmode: The mode of the point.
-        - time: The timestamp of the data.
-        - t8_user: The username for authentication.
-        - t8_password: The password for authentication.
-
-    Assertions:
-        - The returned spectrum data is correctly scaled and matches the expected array.
-        - The minimum frequency matches the expected value.
-        - The maximum frequency matches the expected value.
-    """
     expected_fmin = 5
     expected_fmax = 20
 
@@ -340,22 +316,22 @@ def test_get_spectrum_success() -> None:
         "max_freq": expected_fmax,
     }
 
-    kwargs = {
-        "host": "example.com",
-        "id": "test_id",
-        "machine": "test_machine",
-        "point": "test_point",
-        "pmode": "test_pmode",
-        "time": "2019-04-10T14:48:44",
-        "t8_user": "user",
-        "t8_password": "password",
-    }
+    params = url_params.PmodeTimeParams(
+        host="example.com",
+        id_="test_id",
+        machine="test_machine",
+        point="test_point",
+        pmode="test_pmode",
+        time="2019-04-10T14:48:44",
+        user="user",
+        password="password",
+    )
 
     with patch("requests.get") as mock_get:
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = mock_response
 
-        result = get_data.get_spectrum(**kwargs)
+        result = get_data.get_spectrum(params)
         assert np.array_equal(
             result[0], 2 * np.array([1.0000e00, -1.0000e00, 3.2767e04, -3.2768e04])
         )
@@ -378,21 +354,21 @@ def test_get_spectrum_failure() -> None:
     Expected Result:
     An exception is raised with the message "Failed to get spectra: Not Found".
     """
-    kwargs = {
-        "host": "example.com",
-        "id": "test_id",
-        "machine": "M1",
-        "point": "P1",
-        "pmode": "PM1",
-        "time": "2019-04-10T14:48:44",
-        "t8_user": "user",
-        "t8_password": "password",
-    }
+    params = url_params.PmodeTimeParams(
+        host="example.com",
+        id_="test_id",
+        machine="M1",
+        point="P1",
+        pmode="PM1",
+        time="2019-04-10T14:48:44",
+        user="user",
+        password="password",
+    )
 
     with patch("requests.get") as mock_get:
         mock_get.return_value.status_code = 404
         mock_get.return_value.text = "Not Found"
 
         with pytest.raises(requests.HTTPError) as excinfo:
-            get_data.get_spectrum(**kwargs)
+            get_data.get_spectrum(params)
         assert "Failed to get spectra: Not Found" in str(excinfo.value)

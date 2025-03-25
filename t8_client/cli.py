@@ -10,7 +10,7 @@ import os
 import click
 import numpy as np
 
-from t8_client import get_data
+from t8_client import get_data, url_params
 from t8_client.util.csv import save_array_to_csv
 from t8_client.util.plots import plot_spectrum, plot_waveform
 
@@ -79,14 +79,19 @@ def parse_combined_tag(point: str) -> tuple[str, str, str]:
 def list_waves(ctx, machine, point, pmode):
     if point and ":" in point:
         machine, point, pmode = parse_combined_tag(point)
-    for wave in get_data.get_wave_list(
+
+    params = url_params.PmodeParams(
         host=ctx.obj["host"],
-        id=ctx.obj["id"],
+        id_=ctx.obj["id"],
+        user=ctx.obj["user"],
+        password=ctx.obj["password"],
         machine=machine,
         point=point,
         pmode=pmode,
-        t8_user=ctx.obj["user"],
-        t8_password=ctx.obj["password"],
+    )
+
+    for wave in get_data.get_wave_list(
+        params=params,
     ):
         print(wave)
 
@@ -101,15 +106,18 @@ def list_waves(ctx, machine, point, pmode):
 def list_spectra(ctx, machine, point, pmode):
     if point and ":" in point:
         machine, point, pmode = parse_combined_tag(point)
-    for spectra in get_data.get_spectra(
+
+    params = url_params.PmodeParams(
         host=ctx.obj["host"],
-        id=ctx.obj["id"],
+        id_=ctx.obj["id"],
+        user=ctx.obj["user"],
+        password=ctx.obj["password"],
         machine=machine,
         point=point,
         pmode=pmode,
-        t8_user=ctx.obj["user"],
-        t8_password=ctx.obj["password"],
-    ):
+    )
+
+    for spectra in get_data.get_spectra(params):
         print(spectra)
 
 
@@ -123,16 +131,19 @@ def list_spectra(ctx, machine, point, pmode):
 def get_wave(ctx, machine, point, pmode, time):
     if point and ":" in point:
         machine, point, pmode = parse_combined_tag(point)
-    waveform, _ = get_data.get_wave(
+
+    params = url_params.PmodeTimeParams(
         host=ctx.obj["host"],
-        id=ctx.obj["id"],
+        id_=ctx.obj["id"],
+        user=ctx.obj["user"],
+        password=ctx.obj["password"],
         machine=machine,
         point=point,
         pmode=pmode,
         time=time,
-        t8_user=ctx.obj["user"],
-        t8_password=ctx.obj["password"],
     )
+
+    waveform, _ = get_data.get_wave(params)
 
     # Print the waveform data
     for sample in waveform:
@@ -157,16 +168,19 @@ def get_wave(ctx, machine, point, pmode, time):
 def get_spectrum(ctx, machine, point, pmode, time):
     if point and ":" in point:
         machine, point, pmode = parse_combined_tag(point)
-    spectrum = get_data.get_spectrum(
+
+    params = url_params.PmodeTimeParams(
         host=ctx.obj["host"],
-        id=ctx.obj["id"],
+        id_=ctx.obj["id"],
+        user=ctx.obj["user"],
+        password=ctx.obj["password"],
         machine=machine,
         point=point,
         pmode=pmode,
         time=time,
-        t8_user=ctx.obj["user"],
-        t8_password=ctx.obj["password"],
-    )[0]
+    )
+
+    spectrum = get_data.get_spectrum(params)[0]
 
     # Print the spectrum data
     for sample in spectrum:
@@ -190,17 +204,20 @@ def get_spectrum(ctx, machine, point, pmode, time):
 @click.pass_context
 def plot_wave(ctx, machine, point, pmode, time):
     if point and ":" in point:
-        parse_combined_tag(ctx, None, point)
-    waveform, sample_rate = get_data.get_wave(
+        machine, point, pmode = parse_combined_tag(point)
+
+    params = url_params.PmodeTimeParams(
         host=ctx.obj["host"],
-        id=ctx.obj["id"],
+        id_=ctx.obj["id"],
+        user=ctx.obj["user"],
+        password=ctx.obj["password"],
         machine=machine,
         point=point,
         pmode=pmode,
         time=time,
-        t8_user=ctx.obj["user"],
-        t8_password=ctx.obj["password"],
     )
+
+    waveform, sample_rate = get_data.get_wave(params)
 
     plot_waveform(waveform, sample_rate)
 
@@ -215,22 +232,21 @@ def plot_wave(ctx, machine, point, pmode, time):
 @click.pass_context
 def plot_spectrum_cmd(ctx, machine, point, pmode, time):
     if point and ":" in point:
-        parse_combined_tag(ctx, None, point)
-    spectrum, fmin, fmax = get_data.get_spectrum(
+        machine, point, pmode = parse_combined_tag(point)
+
+    params = url_params.PmodeTimeParams(
         host=ctx.obj["host"],
-        id=ctx.obj["id"],
+        id_=ctx.obj["id"],
+        user=ctx.obj["user"],
+        password=ctx.obj["password"],
         machine=machine,
         point=point,
         pmode=pmode,
         time=time,
-        t8_user=ctx.obj["user"],
-        t8_password=ctx.obj["password"],
     )
+
+    spectrum, fmin, fmax = get_data.get_spectrum(params)
 
     freqs = np.linspace(fmin, fmax, len(spectrum))
 
     plot_spectrum(spectrum, freqs, 0, 500)
-
-
-if __name__ == "__main__":
-    cli()
