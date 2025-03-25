@@ -11,7 +11,36 @@ import requests
 from t8_client import get_data, url_params
 
 
-def test_get_wave_list_success() -> None:
+@pytest.fixture()
+def pmode_params() -> url_params.PmodeParams:
+    """Return a PmodeParams object with dummy values."""
+    return url_params.PmodeParams(
+        host="example.com",
+        id_="test_id",
+        machine="test_machine",
+        point="test_point",
+        pmode="test_pmode",
+        user="user",
+        password="password",
+    )
+
+
+@pytest.fixture()
+def pmode_time_params() -> url_params.PmodeTimeParams:
+    """Return a PmodeTimeParams object with dummy values."""
+    return url_params.PmodeTimeParams(
+        host="example.com",
+        id_="test_id",
+        machine="test_machine",
+        point="test_point",
+        pmode="test_pmode",
+        time="2019-04-13T01:42:16",
+        user="user",
+        password="password",
+    )
+
+
+def test_get_wave_list_success(pmode_params: url_params.PmodeParams) -> None:
     """Test the successful retrieval of wave list.
 
     This test mocks the response from the `requests.get` call to simulate
@@ -49,21 +78,11 @@ def test_get_wave_list_success() -> None:
         ],
     }
 
-    params = url_params.PmodeParams(
-        host="example.com",
-        id_="test_id",
-        machine="test_machine",
-        point="test_point",
-        pmode="test_pmode",
-        user="user",
-        password="password",
-    )
-
     with patch("requests.get") as mock_get:
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = mock_response
 
-        result = list(get_data.get_wave_list(params))
+        result = list(get_data.get_wave_list(pmode_params))
         assert result == [
             "2019-04-10T14:48:44",
             "2019-04-10T14:49:24",
@@ -71,7 +90,7 @@ def test_get_wave_list_success() -> None:
         ]
 
 
-def test_get_wave_list_failure() -> None:
+def test_get_wave_list_failure(pmode_params: url_params.PmodeParams) -> None:
     """Test case for get_wave_list function when the request fails.
 
     This test simulates a failure scenario where the HTTP GET request to fetch the wave
@@ -90,26 +109,16 @@ def test_get_wave_list_failure() -> None:
     message "Failed to get waveform: Not Found" when the HTTP GET request fails with a
     404 status code.
     """
-    params = url_params.PmodeParams(
-        host="example.com",
-        id_="test_id",
-        machine="M1",
-        point="P1",
-        pmode="PM1",
-        user="user",
-        password="password",
-    )
-
     with patch("requests.get") as mock_get:
         mock_get.return_value.status_code = 404
         mock_get.return_value.text = "Not Found"
 
         with pytest.raises(requests.HTTPError) as excinfo:
-            list(get_data.get_wave_list(params))
+            list(get_data.get_wave_list(pmode_params))
         assert "Failed to get waveform: Not Found" in str(excinfo.value)
 
 
-def test_get_wave_success() -> None:
+def test_get_wave_success(pmode_time_params: url_params.PmodeTimeParams) -> None:
     """Test the `get_wave` function for successful data retrieval.
 
     Test the `get_wave` function from the `get_data` module for successful data
@@ -143,29 +152,18 @@ def test_get_wave_success() -> None:
         "sample_rate": expected_sample_rate,
     }
 
-    params = url_params.PmodeTimeParams(
-        host="example.com",
-        id_="test_id",
-        machine="test_machine",
-        point="test_point",
-        pmode="test_pmode",
-        time="2019-04-10T14:48:44",
-        user="user",
-        password="password",
-    )
-
     with patch("requests.get") as mock_get:
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = mock_response
 
-        result = get_data.get_wave(params)
+        result = get_data.get_wave(pmode_time_params)
         assert np.array_equal(
             result[0], 2 * np.array([1.0000e00, -1.0000e00, 3.2767e04, -3.2768e04])
         )
         assert result[1] == expected_sample_rate
 
 
-def test_get_wave_failure() -> None:
+def test_get_wave_failure(pmode_time_params: url_params.PmodeTimeParams) -> None:
     """Test case for the `get_wave` function to handle failure scenarios.
 
     This test verifies that the `get_wave` function raises an exception when the
@@ -183,27 +181,16 @@ def test_get_wave_failure() -> None:
     message "Failed to get waveform: Not Found" when the HTTP request fails with
     a 404 status code.
     """
-    params = url_params.PmodeTimeParams(
-        host="example.com",
-        id_="test_id",
-        machine="M1",
-        point="P1",
-        pmode="PM1",
-        time="2019-04-10T14:48:44",
-        user="user",
-        password="password",
-    )
-
     with patch("requests.get") as mock_get:
         mock_get.return_value.status_code = 404
         mock_get.return_value.text = "Not Found"
 
         with pytest.raises(requests.HTTPError) as excinfo:
-            get_data.get_wave(params)
+            get_data.get_wave(pmode_time_params)
         assert "Failed to get waveform: Not Found" in str(excinfo.value)
 
 
-def test_get_spectra_success() -> None:
+def test_get_spectra_success(pmode_params: url_params.PmodeParams) -> None:
     """Test the successful retrieval of spectra data.
 
     This test mocks the response from an API call to retrieve spectra data and verifies
@@ -241,21 +228,11 @@ def test_get_spectra_success() -> None:
         ],
     }
 
-    params = url_params.PmodeParams(
-        host="example.com",
-        id_="test_id",
-        machine="test_machine",
-        point="test_point",
-        pmode="test_pmode",
-        user="user",
-        password="password",
-    )
-
     with patch("requests.get") as mock_get:
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = mock_response
 
-        result = list(get_data.get_spectra(params))
+        result = list(get_data.get_spectra(pmode_params))
         assert result == [
             "2019-04-10T14:48:44",
             "2019-04-10T14:49:24",
@@ -263,28 +240,34 @@ def test_get_spectra_success() -> None:
         ]
 
 
-def test_get_spectra_failure() -> None:
-    """Test case for the `get_spectra` function to handle failure scenarios."""
-    params = url_params.PmodeParams(
-        host="example.com",
-        id_="test_id",
-        machine="M1",
-        point="P1",
-        pmode="PM1",
-        user="user",
-        password="password",
-    )
+def test_get_spectra_failure(pmode_params: url_params.PmodeParams) -> None:
+    """Test case for the `get_spectra` function to handle failure scenarios.
 
+    Test case for the `get_spectra` function to verify its behavior when the HTTP
+    request fails.
+
+    This test simulates a scenario where the `requests.get` call returns a 404 status
+    code with a "Not Found" message. It ensures that the `get_spectra` function raises
+    an `HTTPError` with the appropriate error message.
+
+    Args:
+        pmode_params (url_params.PmodeParams): Parameters required for the `get_spectra`
+            function.
+
+    Raises:
+        AssertionError: If the raised exception does not contain the expected error
+            message.
+    """
     with patch("requests.get") as mock_get:
         mock_get.return_value.status_code = 404
         mock_get.return_value.text = "Not Found"
 
         with pytest.raises(requests.HTTPError) as excinfo:
-            list(get_data.get_spectra(params))
+            list(get_data.get_spectra(pmode_params))
         assert "Failed to get spectra list: Not Found" in str(excinfo.value)
 
 
-def test_get_spectrum_success() -> None:
+def test_get_spectrum_success(pmode_time_params: url_params.PmodeParams) -> None:
     """Test case for the `get_spectra` function to handle failure scenarios.
 
     This test simulates a failure response from the `requests.get` call by mocking it to
@@ -316,22 +299,11 @@ def test_get_spectrum_success() -> None:
         "max_freq": expected_fmax,
     }
 
-    params = url_params.PmodeTimeParams(
-        host="example.com",
-        id_="test_id",
-        machine="test_machine",
-        point="test_point",
-        pmode="test_pmode",
-        time="2019-04-10T14:48:44",
-        user="user",
-        password="password",
-    )
-
     with patch("requests.get") as mock_get:
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = mock_response
 
-        result = get_data.get_spectrum(params)
+        result = get_data.get_spectrum(pmode_time_params)
         assert np.array_equal(
             result[0], 2 * np.array([1.0000e00, -1.0000e00, 3.2767e04, -3.2768e04])
         )
@@ -339,7 +311,7 @@ def test_get_spectrum_success() -> None:
         assert result[2] == expected_fmax
 
 
-def test_get_spectrum_failure() -> None:
+def test_get_spectrum_failure(pmode_time_params: url_params.PmodeParams) -> None:
     """Test case for the `get_spectrum` function to handle failure scenarios.
 
     This test verifies that the `get_spectrum` function raises an exception
@@ -354,21 +326,10 @@ def test_get_spectrum_failure() -> None:
     Expected Result:
     An exception is raised with the message "Failed to get spectra: Not Found".
     """
-    params = url_params.PmodeTimeParams(
-        host="example.com",
-        id_="test_id",
-        machine="M1",
-        point="P1",
-        pmode="PM1",
-        time="2019-04-10T14:48:44",
-        user="user",
-        password="password",
-    )
-
     with patch("requests.get") as mock_get:
         mock_get.return_value.status_code = 404
         mock_get.return_value.text = "Not Found"
 
         with pytest.raises(requests.HTTPError) as excinfo:
-            get_data.get_spectrum(params)
+            get_data.get_spectrum(pmode_time_params)
         assert "Failed to get spectra: Not Found" in str(excinfo.value)
