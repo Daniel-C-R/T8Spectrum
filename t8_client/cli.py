@@ -15,14 +15,18 @@ from t8_client.util.csv import save_array_to_csv
 from t8_client.util.plots import plot_spectrum, plot_waveform
 
 
-@click.group()
+@click.group(context_settings={"auto_envvar_prefix": "T8_CLIENT"})
+@click.option("-H", "--host", required=True, help="Host URL")
+@click.option("-i", "--id", required=True, help="ID for the endpoint")
+@click.option("-u", "--user", required=True, help="Username for authentication")
+@click.option("-P", "--password", required=True, help="Password for authentication")
 @click.pass_context
-def cli(ctx):
+def cli(ctx, host, id, user, password):
     ctx.ensure_object(dict)
-    ctx.obj["HOST"] = os.getenv("HOST")
-    ctx.obj["ID"] = os.getenv("ID")
-    ctx.obj["T8_USER"] = os.getenv("T8_USER")
-    ctx.obj["T8_PASSWORD"] = os.getenv("T8_PASSWORD")
+    ctx.obj["host"] = host
+    ctx.obj["id"] = id
+    ctx.obj["user"] = user
+    ctx.obj["password"] = password
 
 
 def pmode_params(func):
@@ -33,13 +37,36 @@ def pmode_params(func):
     return click.option("-m", "--pmode", help="Processing mode tag")(func)
 
 
-def parse_combined_tag(ctx, param, value):
-    if value and ":" in value:
-        machine, point, pmode = value.split(":")
-        ctx.params["machine"] = machine
-        ctx.params["point"] = point
-        ctx.params["pmode"] = pmode
-    return value
+def parse_combined_tag(point: str) -> tuple[str, str, str]:
+    """Parses a combined tag string into its components: machine, point, and pmode.
+
+    The input string must be in the format 'M1:P1:PM1', where:
+    - 'M1' represents the machine identifier.
+    - 'P1' represents the point identifier.
+    - 'PM1' represents the mode identifier.
+
+    Args:
+        point (str): The combined tag string to parse. It must contain exactly two
+            colons (':').
+
+    Returns:
+        tuple[str, str, str]: A tuple containing the machine, point, and pmode
+            components.
+
+    Raises:
+        ValueError: If the input string does not contain exactly two colons or is not in
+            the correct format.
+
+    """
+    if point and ":" in point:
+        parts = point.split(":")
+        if len(parts) == 3:  # noqa: PLR2004
+            machine, point, pmode = parts
+            return machine, point, pmode
+        error_message = "Point must be in the format 'M1:P1:PM1'"
+        raise ValueError(error_message)
+    error_message = "Point must contain ':' and be in the format 'M1:P1:PM1'"
+    raise ValueError(error_message)
 
 
 @cli.command(
@@ -51,15 +78,15 @@ def parse_combined_tag(ctx, param, value):
 @click.pass_context
 def list_waves(ctx, machine, point, pmode):
     if point and ":" in point:
-        parse_combined_tag(ctx, None, point)
+        machine, point, pmode = parse_combined_tag(point)
     for wave in get_data.get_wave_list(
-        host=ctx.obj["HOST"],
-        id=ctx.obj["ID"],
-        machine=ctx.params["machine"],
-        point=ctx.params["point"],
-        pmode=ctx.params["pmode"],
-        t8_user=ctx.obj["T8_USER"],
-        t8_password=ctx.obj["T8_PASSWORD"],
+        host=ctx.obj["host"],
+        id=ctx.obj["id"],
+        machine=machine,
+        point=point,
+        pmode=pmode,
+        t8_user=ctx.obj["user"],
+        t8_password=ctx.obj["password"],
     ):
         print(wave)
 
@@ -73,15 +100,15 @@ def list_waves(ctx, machine, point, pmode):
 @click.pass_context
 def list_spectra(ctx, machine, point, pmode):
     if point and ":" in point:
-        parse_combined_tag(ctx, None, point)
+        machine, point, pmode = parse_combined_tag(point)
     for spectra in get_data.get_spectra(
-        host=ctx.obj["HOST"],
-        id=ctx.obj["ID"],
-        machine=ctx.params["machine"],
-        point=ctx.params["point"],
-        pmode=ctx.params["pmode"],
-        t8_user=ctx.obj["T8_USER"],
-        t8_password=ctx.obj["T8_PASSWORD"],
+        host=ctx.obj["host"],
+        id=ctx.obj["id"],
+        machine=machine,
+        point=point,
+        pmode=pmode,
+        t8_user=ctx.obj["user"],
+        t8_password=ctx.obj["password"],
     ):
         print(spectra)
 
@@ -95,16 +122,16 @@ def list_spectra(ctx, machine, point, pmode):
 @click.pass_context
 def get_wave(ctx, machine, point, pmode, time):
     if point and ":" in point:
-        parse_combined_tag(ctx, None, point)
+        machine, point, pmode = parse_combined_tag(point)
     waveform, _ = get_data.get_wave(
-        host=ctx.obj["HOST"],
-        id=ctx.obj["ID"],
-        machine=ctx.params["machine"],
-        point=ctx.params["point"],
-        pmode=ctx.params["pmode"],
+        host=ctx.obj["host"],
+        id=ctx.obj["id"],
+        machine=machine,
+        point=point,
+        pmode=pmode,
         time=time,
-        t8_user=ctx.obj["T8_USER"],
-        t8_password=ctx.obj["T8_PASSWORD"],
+        t8_user=ctx.obj["user"],
+        t8_password=ctx.obj["password"],
     )
 
     # Print the waveform data
@@ -129,16 +156,16 @@ def get_wave(ctx, machine, point, pmode, time):
 @click.pass_context
 def get_spectrum(ctx, machine, point, pmode, time):
     if point and ":" in point:
-        parse_combined_tag(ctx, None, point)
+        machine, point, pmode = parse_combined_tag(point)
     spectrum = get_data.get_spectrum(
-        host=ctx.obj["HOST"],
-        id=ctx.obj["ID"],
-        machine=ctx.params["machine"],
-        point=ctx.params["point"],
-        pmode=ctx.params["pmode"],
+        host=ctx.obj["host"],
+        id=ctx.obj["id"],
+        machine=machine,
+        point=point,
+        pmode=pmode,
         time=time,
-        t8_user=ctx.obj["T8_USER"],
-        t8_password=ctx.obj["T8_PASSWORD"],
+        t8_user=ctx.obj["user"],
+        t8_password=ctx.obj["password"],
     )[0]
 
     # Print the spectrum data
@@ -165,14 +192,14 @@ def plot_wave(ctx, machine, point, pmode, time):
     if point and ":" in point:
         parse_combined_tag(ctx, None, point)
     waveform, sample_rate = get_data.get_wave(
-        host=ctx.obj["HOST"],
-        id=ctx.obj["ID"],
-        machine=ctx.params["machine"],
-        point=ctx.params["point"],
-        pmode=ctx.params["pmode"],
+        host=ctx.obj["host"],
+        id=ctx.obj["id"],
+        machine=machine,
+        point=point,
+        pmode=pmode,
         time=time,
-        t8_user=ctx.obj["T8_USER"],
-        t8_password=ctx.obj["T8_PASSWORD"],
+        t8_user=ctx.obj["user"],
+        t8_password=ctx.obj["password"],
     )
 
     plot_waveform(waveform, sample_rate)
@@ -190,14 +217,14 @@ def plot_spectrum_cmd(ctx, machine, point, pmode, time):
     if point and ":" in point:
         parse_combined_tag(ctx, None, point)
     spectrum, fmin, fmax = get_data.get_spectrum(
-        host=ctx.obj["HOST"],
-        id=ctx.obj["ID"],
-        machine=ctx.params["machine"],
-        point=ctx.params["point"],
-        pmode=ctx.params["pmode"],
+        host=ctx.obj["host"],
+        id=ctx.obj["id"],
+        machine=machine,
+        point=point,
+        pmode=pmode,
         time=time,
-        t8_user=ctx.obj["T8_USER"],
-        t8_password=ctx.obj["T8_PASSWORD"],
+        t8_user=ctx.obj["user"],
+        t8_password=ctx.obj["password"],
     )
 
     freqs = np.linspace(fmin, fmax, len(spectrum))
