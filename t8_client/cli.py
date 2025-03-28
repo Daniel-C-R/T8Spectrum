@@ -16,10 +16,14 @@ from t8_client.util.plots import plot_spectrum, plot_waveform
 
 
 @click.group(context_settings={"auto_envvar_prefix": "T8_CLIENT"})
-@click.option("-H", "--host", required=True, help="Host URL")
+@click.option("-H", "--host", required=True, help="Host URL where to access the T8")
 @click.option("-i", "--id", required=True, help="ID for the endpoint")
-@click.option("-u", "--user", required=True, help="Username for authentication")
-@click.option("-P", "--password", required=True, help="Password for authentication")
+@click.option(
+    "-u", "--user", required=True, help="Username to authenticate into the T8"
+)
+@click.option(
+    "-P", "--password", required=True, help="Password to authenticate into the T8"
+)
 @click.pass_context
 def cli(ctx, host, id, user, password):
     ctx.ensure_object(dict)
@@ -32,7 +36,11 @@ def cli(ctx, host, id, user, password):
 def pmode_params(func):
     func = click.option("-M", "--machine", help="Machine tag")(func)
     func = click.option(
-        "-p", "--point", help="Point tag or combined tag in the format M1:P1:PM1"
+        "-p",
+        "--point",
+        help="Point tag. Alternatively, if you use the format "
+        + "'M1:P1:PM1 (M1, P1, PM1 are the machine, point, and pmode identifiers,"
+        " respectively)', you can skip the machine, point, and pmode options.",
     )(func)
     return click.option("-m", "--pmode", help="Processing mode tag")(func)
 
@@ -71,8 +79,14 @@ def parse_combined_tag(point: str) -> tuple[str, str, str]:
 
 @cli.command(
     name="list-waves",
-    help="List all the waves for a given machine, point, and processing mode as a"
-    + " list of dates.",
+    help="""List all the waves for a given processing point
+
+    Given a machine, point, and processing mode, this command lists all the waves
+    available for that point. The waves are listed as a series of dates in ISO 8601
+    that can be used to retrieve the wave data.
+    """,
+    # "List all the waves for a given machine, point, and processing mode as a"
+    # + " list of dates.",
 )
 @pmode_params
 @click.pass_context
@@ -98,8 +112,10 @@ def list_waves(ctx, machine, point, pmode):
 
 @cli.command(
     name="list-spectra",
-    help="List all the spectra for a given machine, point, and processing mode as a"
-    + " list of dates.",
+    help="""
+    """,
+    # "List all the spectra for a given machine, point, and processing mode as a"
+    # + " list of dates.",
 )
 @pmode_params
 @click.pass_context
@@ -123,10 +139,16 @@ def list_spectra(ctx, machine, point, pmode):
 
 @cli.command(
     name="get-wave",
-    help="Get the wave data for a given machine, point, processing mode, and time.",
+    help="""Get wave data from a given pmode and datetime
+
+    Given a machine, point, processing mode, and time, this command retrieves the wave
+    data for that point at the specified time.
+    """,
 )
 @pmode_params
-@click.option("-t", "--time", required=True, help="Time of the wave")
+@click.option(
+    "-t", "--time", required=True, help="Time of the wave data in ISO 8601 format"
+)
 @click.pass_context
 def get_wave(ctx, machine, point, pmode, time):
     if point and ":" in point:
@@ -160,10 +182,16 @@ def get_wave(ctx, machine, point, pmode, time):
 
 @cli.command(
     name="get-spectrum",
-    help="Get the spectrum data for a given machine, point, processing mode, and time.",
+    help="""Get spectrum data from a given pmode and datetime
+
+    Given a machine, point, processing mode, and time, this command retrieves the
+    spectrum data for that point at the specified time.
+    """,
 )
 @pmode_params
-@click.option("-t", "--time", required=True, help="Time of the spectrum")
+@click.option(
+    "-t", "--time", required=True, help="Time of the spectrum data in ISO 8601 format"
+)
 @click.pass_context
 def get_spectrum(ctx, machine, point, pmode, time):
     if point and ":" in point:
@@ -197,9 +225,15 @@ def get_spectrum(ctx, machine, point, pmode, time):
 
 @cli.command(
     name="plot-wave",
-    help="Plot the wave data for a given machine, point, processing mode, and time.",
+    help="""Plot the wave data for a given pmode and datetime.
+
+    Given a machine, point, processing mode, and time, this command retrieves the wave
+    data for that point at the specified time and plots it.
+    """,
 )
-@click.option("-t", "--time", required=True, help="Time of the wave")
+@click.option(
+    "-t", "--time", required=True, help="Time of the wave data in ISO 8601 format"
+)
 @pmode_params
 @click.pass_context
 def plot_wave(ctx, machine, point, pmode, time):
@@ -224,10 +258,15 @@ def plot_wave(ctx, machine, point, pmode, time):
 
 @cli.command(
     name="plot-spectrum",
-    help="Plot the spectrum data for a given machine, point, processing mode, and"
-    + " time.",
+    help="""Plot the spectrum data for a given pmode and datetime.
+
+    Given a machine, point, processing mode, and time, this command retrieves the
+    spectrum data for that point at the specified time and plots it.
+    """,
 )
-@click.option("-t", "--time", required=True, help="Time of the spectrum")
+@click.option(
+    "-t", "--time", required=True, help="Time of the spectrum data in ISO 8601 format"
+)
 @pmode_params
 @click.pass_context
 def plot_spectrum_cmd(ctx, machine, point, pmode, time):
